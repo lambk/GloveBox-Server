@@ -28,7 +28,7 @@ public class UserController {
      * @return The ResponseEntity outcome passed from the service layer
      */
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = "application/json")
-    public ResponseEntity test(@Valid @RequestBody UserWrapper userInfo) {
+    public ResponseEntity<String> test(@Valid @RequestBody UserWrapper userInfo) {
         return userService.createUser(userInfo);
     }
 }

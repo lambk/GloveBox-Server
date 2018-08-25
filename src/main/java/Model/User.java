@@ -1,9 +1,11 @@
 package Model;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 
 public class User {
     @NotEmpty
+    @Email
     private String email;
     @NotEmpty
     private String firstName;
