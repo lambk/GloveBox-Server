@@ -11,13 +11,13 @@ import java.sql.SQLException;
 
 @Component
 class ConnectionFactory {
-    @Value("${DB_URL}")
+    @Value("${DB_URL:}")
     private String url;
     private ComboPooledDataSource dataSource;
 
     @PostConstruct
     public void init() {
-        if (url == null) {
+        if (url == null || url.equals("")) {
             url = System.getenv("JAWSDB_URL");
         }
         dataSource = new ComboPooledDataSource();
