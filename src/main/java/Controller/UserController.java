@@ -21,6 +21,12 @@ public class UserController {
         this.userService = userService;
     }
 
+    /**
+     * Calls the service layer to attempt to create the given user.
+     * The UserWrapper provided is validated on receiving based on the property annotations in User and UserWrapper
+     * @param userInfo The request body containing the user property fields, and password
+     * @return The ResponseEntity outcome passed from the service layer
+     */
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = "application/json")
     public ResponseEntity test(@Valid @RequestBody UserWrapper userInfo) {
         return userService.createUser(userInfo);

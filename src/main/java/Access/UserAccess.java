@@ -20,6 +20,13 @@ public class UserAccess implements IUserAccess {
         this.factory = factory;
     }
 
+    /**
+     * Fetches a user record from the database that has the given email.
+     * Returns a new User object if a record is found, else returns null
+     *
+     * @param email The email to find records using
+     * @return A matching User record if found, else null
+     */
     @Override
     public User getUserByEmail(String email) {
         try (Connection connection = factory.getConnection()) {
@@ -38,6 +45,15 @@ public class UserAccess implements IUserAccess {
         }
     }
 
+    /**
+     * Attempts to insert a user into the database. The user is passed in a UserWrapper
+     * object, which holds the (hashed) password from the service layer. These details are then used to
+     * call the insert_user stored procedure.
+     *
+     * @param userWrapper The UserWrapper containing User and password information
+     * @param salt The generated salt (generated in the service layer)
+     * @throws SQLException Used to provide feedback on the outcome to the service layer
+     */
     @Override
     public void insertUser(IUserWrapper userWrapper, String salt) throws SQLException {
         Connection connection = factory.getConnection();
