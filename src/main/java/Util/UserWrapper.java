@@ -10,7 +10,6 @@ public class UserWrapper implements IUserWrapper {
     private User user;
     @NotEmpty
     private String password;
-    private String salt;
 
     public UserWrapper() {}
 
@@ -22,11 +21,7 @@ public class UserWrapper implements IUserWrapper {
         return password;
     }
 
-    public String getSalt() {
-        return salt;
-    }
-
-    public void setSalt(String salt) {
-        this.salt = salt;
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

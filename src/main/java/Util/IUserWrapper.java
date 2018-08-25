@@ -8,7 +8,5 @@ public interface IUserWrapper {
 
     String getPassword();
 
-    String getSalt();
-
-    void setSalt(String salt);
+    void setPassword(String password);
 }
