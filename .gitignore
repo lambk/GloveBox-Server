@@ -1,4 +1,5 @@
 .idea/
+target/
+*.properties
 *.iml
 *.DS_STORE
-target/
