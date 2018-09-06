@@ -11,7 +11,7 @@ import java.sql.SQLException;
 
 @Component
 class ConnectionFactory {
-    @Value("${DB_URL:}")
+    @Value("${DB_URL}")
     private String url;
     private ComboPooledDataSource dataSource;
 
