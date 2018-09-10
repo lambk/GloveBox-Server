@@ -1,7 +1,8 @@
 package Access;
 
 import Model.User;
-import Util.IUserWrapper;
+import Transfer.AuthenticationDTO;
+import Transfer.RegistrationDTO;
 
 import java.sql.SQLException;
 
@@ -9,5 +10,13 @@ public interface IUserAccess {
 
     User getUserByEmail(String email);
 
-    void insertUser(IUserWrapper userWrapper, String salt) throws SQLException;
+    AuthenticationDTO getAuthenticationDetailsByEmail(String email);
+
+    String getTokenByEmail(String email);
+
+    void insertToken(String email, String token) throws SQLException;
+
+    void deleteToken(String token);
+
+    void insertUser(RegistrationDTO registrationDTO) throws SQLException;
 }

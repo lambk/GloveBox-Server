@@ -1,8 +1,8 @@
 package Service;
 
-import Util.IUserWrapper;
+import Transfer.RegistrationDTO;
 import org.springframework.http.ResponseEntity;
 
 public interface IUserService {
-    ResponseEntity<String> createUser(IUserWrapper userWrapper);
+    ResponseEntity<String> createUser(RegistrationDTO registrationDTO);
 }
