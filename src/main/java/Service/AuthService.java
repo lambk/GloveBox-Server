@@ -4,6 +4,7 @@ import Access.IUserAccess;
 import Transfer.AuthenticationDTO;
 import Transfer.LoginDTO;
 import Transfer.LogoutDTO;
+import Transfer.ValidationDTO;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,10 +33,7 @@ public class AuthService implements IAuthService {
      * Else, a 401 is returned
      *
      * @param loginDTO The details for the login attempt
-     * @return A ResponseEntity representing the outcome of the login attempt. Statuses are as follows:
-     * - UNAUTHORIZED if the email/password combination doesn't match the record from the database
-     * - OK if details were correct and the token was successfully added to the db
-     * - INTERNAL_SERVER_ERROR if the access layer throws an SQLException on token insertion
+     * @return A ResponseEntity representing the outcome of the login attempt
      */
     @Override
     public ResponseEntity<String> login(LoginDTO loginDTO) {
@@ -63,9 +61,7 @@ public class AuthService implements IAuthService {
      * If a token from the database cannot be found or the tokens do not match, a 401 is returned
      *
      * @param logoutDTO The logout details (email, token) from the controller
-     * @return A ResponseEntity representing the outcome of the logout attempt. Statuses are as follows:
-     * - UNAUTHORIZED if there was no token found in the db or the tokens did not match
-     * - OK if the tokens matched
+     * @return A ResponseEntity representing the outcome of the logout attempt
      */
     @Override
     public ResponseEntity<String> logout(LogoutDTO logoutDTO) {
@@ -75,5 +71,21 @@ public class AuthService implements IAuthService {
         }
         userAccess.deleteToken(logoutDTO.getEmail());
         return new ResponseEntity<>("Successfully logged out", HttpStatus.OK);
+    }
+
+    /**
+     * Checks the given token against the current token in the database for the record with the given email
+     * Returns HTTP OK or HTTP Unauthorised depending on whether the given token is up to date or not (respectively)
+     *
+     * @param validationDTO The validation transfer object from the controller
+     * @return The ResponseEntity representing the outcome of the validation
+     */
+    @Override
+    public ResponseEntity<String> validateToken(ValidationDTO validationDTO) {
+        String token = userAccess.getTokenByEmail(validationDTO.getEmail());
+        if (token == null || !token.equals(validationDTO.getToken())) {
+            return new ResponseEntity<>("Token is invalid or expired", HttpStatus.UNAUTHORIZED);
+        }
+        return new ResponseEntity<>("Token is valid", HttpStatus.OK);
     }
 }

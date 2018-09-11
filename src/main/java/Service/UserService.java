@@ -29,10 +29,7 @@ public class UserService implements IUserService {
      * - The Registration DTO is sent to the access layer to be inserted
      *
      * @param  registrationDTO The DTO containing the User object, and the desired password
-     * @return A ResponseEntity representing the outcome of the creation. Statuses are as follows:
-     * - BAD_REQUEST if the email is already used
-     * - CREATED if the access layer performs an insert without throwing an SQLException
-     * - INTERNAL_SERVER_ERROR if the access layer throws an SQLException
+     * @return A ResponseEntity representing the outcome of the creation
      */
     @Override
     public ResponseEntity<String> createUser(RegistrationDTO registrationDTO) {

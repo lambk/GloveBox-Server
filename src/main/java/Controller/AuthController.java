@@ -3,6 +3,7 @@ package Controller;
 import Service.IAuthService;
 import Transfer.LoginDTO;
 import Transfer.LogoutDTO;
+import Transfer.ValidationDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +29,18 @@ public class AuthController {
     @RequestMapping(value = "/login", method = RequestMethod.POST, consumes = "application/json")
     public ResponseEntity<String> login(@RequestBody LoginDTO loginDTO) {
         return authService.login(loginDTO);
+    }
+
+    /**
+     * Calls the service layer to validate the given token against the token in the database
+     *
+     * @param validationDTO The validation transfer object from the client
+     * @return The ResponseEntity outcome passed
+     */
+    @CrossOrigin(methods = {RequestMethod.POST})
+    @RequestMapping(value = "/validate", method = RequestMethod.POST, consumes = "application/json")
+    public ResponseEntity<String> validate(@RequestBody ValidationDTO validationDTO) {
+        return authService.validateToken(validationDTO);
     }
 
     /**
