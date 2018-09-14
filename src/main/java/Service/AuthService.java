@@ -1,7 +1,7 @@
 package Service;
 
 import Access.IUserAccess;
-import Transfer.AuthenticationDTO;
+import Model.User;
 import Transfer.LoginDTO;
 import Transfer.LogoutDTO;
 import Transfer.ValidationDTO;
@@ -25,7 +25,7 @@ public class AuthService implements IAuthService {
     }
 
     /**
-     * Checks the provided login details against the record in the database. The AuthenticationDTO for that record
+     * Checks the provided login details against the record in the database. The User authentication for that record
      * is fetched from the Access layer (if none exists, a 401 is returned), after which the provided password is hashed using the salt from the db,
      * and the result is then checked against the (hashed) password from the db.
      * <p>
@@ -37,12 +37,12 @@ public class AuthService implements IAuthService {
      */
     @Override
     public ResponseEntity<String> login(LoginDTO loginDTO) {
-        AuthenticationDTO authenticationObject = userAccess.getAuthenticationDetailsByEmail(loginDTO.getEmail());
-        if (authenticationObject == null) {
+        User authentication = userAccess.getAuthenticationDetailsByEmail(loginDTO.getEmail());
+        if (authentication == null) {
             return new ResponseEntity<>("The provided email/password combination is incorrect", HttpStatus.UNAUTHORIZED);
         }
-        String attemptedHash = DigestUtils.sha256Hex(authenticationObject.getSalt() + loginDTO.getPassword());
-        if (attemptedHash.equals(authenticationObject.getPassword())) {
+        String attemptedHash = DigestUtils.sha256Hex(authentication.getSalt() + loginDTO.getPassword());
+        if (attemptedHash.equals(authentication.getPassword())) {
             String token = (DigestUtils.sha256Hex(UUID.randomUUID().toString()));
             try {
                 userAccess.insertToken(loginDTO.getEmail(), token);

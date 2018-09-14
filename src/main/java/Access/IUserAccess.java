@@ -1,7 +1,6 @@
 package Access;
 
 import Model.User;
-import Transfer.AuthenticationDTO;
 import Transfer.RegistrationDTO;
 
 import java.sql.SQLException;
@@ -10,7 +9,7 @@ public interface IUserAccess {
 
     User getUserByEmail(String email);
 
-    AuthenticationDTO getAuthenticationDetailsByEmail(String email);
+    User getAuthenticationDetailsByEmail(String email);
 
     String getTokenByEmail(String email);
 

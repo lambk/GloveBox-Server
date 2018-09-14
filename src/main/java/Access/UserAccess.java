@@ -1,7 +1,6 @@
 package Access;
 
 import Model.User;
-import Transfer.AuthenticationDTO;
 import Transfer.RegistrationDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -51,17 +50,19 @@ public class UserAccess implements IUserAccess {
      * The authentication details include the salt and (hashed) password
      *
      * @param email The email to find records using
-     * @return The Authentication transfer object for the given email
+     * @return The User object with the salt and password fields
      */
     @Override
-    public AuthenticationDTO getAuthenticationDetailsByEmail(String email) {
+    public User getAuthenticationDetailsByEmail(String email) {
         try (Connection connection = factory.getConnection()) {
             PreparedStatement statement = connection.prepareStatement("{CALL get_auth_by_email(?)}");
             statement.setString(1, email);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                return new AuthenticationDTO(resultSet.getString("salt"),
-                        resultSet.getString("password"));
+                User user = new User();
+                user.setSalt(resultSet.getString("salt"));
+                user.setPassword(resultSet.getString("password"));
+                return user;
             }
             return null;
         } catch (SQLException e) {
