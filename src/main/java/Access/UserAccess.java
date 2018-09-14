@@ -1,7 +1,6 @@
 package Access;
 
 import Model.User;
-import Transfer.RegistrationDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -28,7 +27,7 @@ public class UserAccess implements IUserAccess {
      * @return A matching User record if found, else null
      */
     @Override
-    public User getUserByEmail(String email) {
+    public User getUser(String email) {
         try (Connection connection = factory.getConnection()) {
             PreparedStatement statement = connection.prepareStatement("{CALL get_user_by_email(?)}");
             statement.setString(1, email);
@@ -53,7 +52,7 @@ public class UserAccess implements IUserAccess {
      * @return The User object with the salt and password fields
      */
     @Override
-    public User getAuthenticationDetailsByEmail(String email) {
+    public User getAuthenticationDetails(String email) {
         try (Connection connection = factory.getConnection()) {
             PreparedStatement statement = connection.prepareStatement("{CALL get_auth_by_email(?)}");
             statement.setString(1, email);
@@ -79,7 +78,7 @@ public class UserAccess implements IUserAccess {
      * @return The token (String) for that email
      */
     @Override
-    public String getTokenByEmail(String email) {
+    public String getTokenDetails(String email) {
         try (Connection connection = factory.getConnection()) {
             PreparedStatement statement = connection.prepareStatement("{CALL get_token_by_email(?)}");
             statement.setString(1, email);
@@ -128,22 +127,21 @@ public class UserAccess implements IUserAccess {
     }
 
     /**
-     * Attempts to insert a user into the database. The user is passed in a UserWrapper
-     * object, which holds the (hashed) password from the service layer. These details are then used to
+     * Attempts to insert a user into the database. These details are then used to
      * call the insert_user stored procedure.
      *
-     * @param registrationDTO The Registration DTO containing User, salt and password information
+     * @param user The new User information
      * @throws SQLException Used to provide feedback on the outcome to the service layer
      */
     @Override
-    public void insertUser(RegistrationDTO registrationDTO) throws SQLException {
+    public void insertUser(User user) throws SQLException {
         Connection connection = factory.getConnection();
         PreparedStatement statement = connection.prepareStatement("{CALL insert_user(?, ?, ?, ?, ?)}");
-        statement.setString(1, registrationDTO.getUser().getEmail());
-        statement.setString(2, registrationDTO.getUser().getFirstName());
-        statement.setString(3, registrationDTO.getUser().getLastName());
-        statement.setString(4, registrationDTO.getSalt());
-        statement.setString(5, registrationDTO.getPassword());
+        statement.setString(1, user.getEmail());
+        statement.setString(2, user.getFirstName());
+        statement.setString(3, user.getLastName());
+        statement.setString(4, user.getSalt());
+        statement.setString(5, user.getPassword());
         statement.executeUpdate();
     }
 }

@@ -4,11 +4,12 @@ import Access.IUserAccess;
 import Model.User;
 import Transfer.LoginDTO;
 import Transfer.LogoutDTO;
+import Transfer.TokenDTO;
 import Transfer.ValidationDTO;
+import Utility.Exceptions.InternalServerErrorException;
+import Utility.Exceptions.UnauthorizedException;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
@@ -36,23 +37,22 @@ public class AuthService implements IAuthService {
      * @return A ResponseEntity representing the outcome of the login attempt
      */
     @Override
-    public ResponseEntity<String> login(LoginDTO loginDTO) {
-        User authentication = userAccess.getAuthenticationDetailsByEmail(loginDTO.getEmail());
+    public TokenDTO login(LoginDTO loginDTO) throws UnauthorizedException, InternalServerErrorException {
+        User authentication = userAccess.getAuthenticationDetails(loginDTO.getEmail());
         if (authentication == null) {
-            return new ResponseEntity<>("The provided email/password combination is incorrect", HttpStatus.UNAUTHORIZED);
+            throw new UnauthorizedException("The provided email/password combination is incorrect");
         }
         String attemptedHash = DigestUtils.sha256Hex(authentication.getSalt() + loginDTO.getPassword());
-        if (attemptedHash.equals(authentication.getPassword())) {
+        if (!attemptedHash.equals(authentication.getPassword())) {
+            throw new UnauthorizedException("The provided email/password combination is incorrect");
+        } else {
             String token = (DigestUtils.sha256Hex(UUID.randomUUID().toString()));
             try {
                 userAccess.insertToken(loginDTO.getEmail(), token);
-                return new ResponseEntity<>(token, HttpStatus.OK);
+                return new TokenDTO(loginDTO.getEmail(), token);
             } catch (SQLException e) {
-                e.printStackTrace();
-                return new ResponseEntity<>("There was an error saving the login token", HttpStatus.INTERNAL_SERVER_ERROR);
+                throw new InternalServerErrorException("There was an error saving the login token");
             }
-        } else {
-            return new ResponseEntity<>("The provided email/password combination is incorrect", HttpStatus.UNAUTHORIZED);
         }
     }
 
@@ -61,16 +61,14 @@ public class AuthService implements IAuthService {
      * If a token from the database cannot be found or the tokens do not match, a 401 is returned
      *
      * @param logoutDTO The logout details (email, token) from the controller
-     * @return A ResponseEntity representing the outcome of the logout attempt
      */
     @Override
-    public ResponseEntity<String> logout(LogoutDTO logoutDTO) {
-        String token = userAccess.getTokenByEmail(logoutDTO.getEmail());
+    public void logout(LogoutDTO logoutDTO) throws UnauthorizedException {
+        String token = userAccess.getTokenDetails(logoutDTO.getEmail());
         if (token == null || !token.equals(logoutDTO.getToken())) {
-            return new ResponseEntity<>("The provided email/token combination is incorrect", HttpStatus.UNAUTHORIZED);
+            throw new UnauthorizedException("The provided email/token combination is incorrect");
         }
         userAccess.deleteToken(logoutDTO.getEmail());
-        return new ResponseEntity<>("Successfully logged out", HttpStatus.OK);
     }
 
     /**
@@ -78,14 +76,11 @@ public class AuthService implements IAuthService {
      * Returns HTTP OK or HTTP Unauthorised depending on whether the given token is up to date or not (respectively)
      *
      * @param validationDTO The validation transfer object from the controller
-     * @return The ResponseEntity representing the outcome of the validation
+     * @return Boolean stating whether the token is valid
      */
     @Override
-    public ResponseEntity<String> validateToken(ValidationDTO validationDTO) {
-        String token = userAccess.getTokenByEmail(validationDTO.getEmail());
-        if (token == null || !token.equals(validationDTO.getToken())) {
-            return new ResponseEntity<>("Token is invalid or expired", HttpStatus.UNAUTHORIZED);
-        }
-        return new ResponseEntity<>("Token is valid", HttpStatus.OK);
+    public boolean validateToken(ValidationDTO validationDTO) {
+        String token = userAccess.getTokenDetails(validationDTO.getEmail());
+        return token != null && token.equals(validationDTO.getToken());
     }
 }

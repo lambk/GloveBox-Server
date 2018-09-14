@@ -1,15 +1,8 @@
 package Model;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
-
 public class User {
-    @NotEmpty
-    @Email
     private String email;
-    @NotEmpty
     private String firstName;
-    @NotEmpty
     private String lastName;
     private String salt;
     private String password;
@@ -20,6 +13,14 @@ public class User {
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
+    }
+
+    public User(String email, String firstName, String lastName, String salt, String password) {
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.salt = salt;
+        this.password = password;
     }
 
     public String getEmail() {

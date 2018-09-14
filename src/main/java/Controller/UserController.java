@@ -2,7 +2,9 @@ package Controller;
 
 import Service.IUserService;
 import Transfer.RegistrationDTO;
+import jdk.nashorn.internal.runtime.regexp.joni.exception.InternalException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,13 +23,20 @@ public class UserController {
 
     /**
      * Calls the service layer to attempt to create the given user.
-     * The UserWrapper provided is validated on receiving based on the property annotations in User and RegistrationDTO
+     *
      * @param userInfo The request body containing the user property fields, and password
-     * @return The ResponseEntity outcome passed from the service layer
+     * @return The ResponseEntity outcome
      */
     @CrossOrigin(methods = {RequestMethod.POST})
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = "application/json")
     public ResponseEntity<String> register(@Valid @RequestBody RegistrationDTO userInfo) {
-        return userService.createUser(userInfo);
+        try {
+            userService.createUser(userInfo);
+            return new ResponseEntity<>("Account successfully created", HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (InternalException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

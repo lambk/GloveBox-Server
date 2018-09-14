@@ -1,8 +1,8 @@
 package Service;
 
 import Transfer.RegistrationDTO;
-import org.springframework.http.ResponseEntity;
+import jdk.nashorn.internal.runtime.regexp.joni.exception.InternalException;
 
 public interface IUserService {
-    ResponseEntity<String> createUser(RegistrationDTO registrationDTO);
+    void createUser(RegistrationDTO registrationDTO) throws IllegalArgumentException, InternalException;
 }

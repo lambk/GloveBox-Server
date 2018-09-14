@@ -2,13 +2,15 @@ package Service;
 
 import Transfer.LoginDTO;
 import Transfer.LogoutDTO;
+import Transfer.TokenDTO;
 import Transfer.ValidationDTO;
-import org.springframework.http.ResponseEntity;
+import Utility.Exceptions.InternalServerErrorException;
+import Utility.Exceptions.UnauthorizedException;
 
 public interface IAuthService {
-    ResponseEntity<String> login(LoginDTO loginDTO);
+    TokenDTO login(LoginDTO loginDTO) throws UnauthorizedException, InternalServerErrorException;
 
-    ResponseEntity<String> logout(LogoutDTO logoutDTO);
+    void logout(LogoutDTO logoutDTO) throws UnauthorizedException;
 
-    ResponseEntity<String> validateToken(ValidationDTO validationDTO);
+    boolean validateToken(ValidationDTO validationDTO);
 }

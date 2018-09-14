@@ -1,21 +1,20 @@
 package Access;
 
 import Model.User;
-import Transfer.RegistrationDTO;
 
 import java.sql.SQLException;
 
 public interface IUserAccess {
 
-    User getUserByEmail(String email);
+    User getUser(String email);
 
-    User getAuthenticationDetailsByEmail(String email);
+    User getAuthenticationDetails(String email);
 
-    String getTokenByEmail(String email);
+    String getTokenDetails(String email);
 
     void insertToken(String email, String token) throws SQLException;
 
     void deleteToken(String token);
 
-    void insertUser(RegistrationDTO registrationDTO) throws SQLException;
+    void insertUser(User user) throws SQLException;
 }

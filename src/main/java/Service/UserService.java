@@ -1,11 +1,11 @@
 package Service;
 
 import Access.IUserAccess;
+import Model.User;
 import Transfer.RegistrationDTO;
+import jdk.nashorn.internal.runtime.regexp.joni.exception.InternalException;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
@@ -22,28 +22,27 @@ public class UserService implements IUserService {
     }
 
     /**
-     * Performs business logic to check if the user can be created.
+     * Checks if the user can be created.
      * The following actions are taken:
      * - The database is checked for the presence of a user with the same email
-     * - A random salt is generated and used to hash the password in the Registration DTO
-     * - The Registration DTO is sent to the access layer to be inserted
+     * - A random salt is generated and used to hash the password given in the Registration DTO
+     * - The new User object is sent to the access layer to be inserted
      *
-     * @param  registrationDTO The DTO containing the User object, and the desired password
-     * @return A ResponseEntity representing the outcome of the creation
+     * @param registrationDTO The DTO containing the registration details
      */
     @Override
-    public ResponseEntity<String> createUser(RegistrationDTO registrationDTO) {
-        if (userAccess.getUserByEmail(registrationDTO.getUser().getEmail()) != null) {
-            return new ResponseEntity<>(String.format("Account %s already exists", registrationDTO.getUser().getEmail()), HttpStatus.BAD_REQUEST);
+    public void createUser(RegistrationDTO registrationDTO) throws IllegalArgumentException, InternalException {
+        if (userAccess.getUser(registrationDTO.getEmail()) != null) {
+            throw new IllegalArgumentException("Account already exists");
         }
-        registrationDTO.setSalt(DigestUtils.sha256Hex(UUID.randomUUID().toString()));
-        registrationDTO.setPassword(DigestUtils.sha256Hex(registrationDTO.getSalt() + registrationDTO.getPassword()));
+        String salt = DigestUtils.sha256Hex(UUID.randomUUID().toString());
+        String hashedPassword = DigestUtils.sha256Hex(salt + registrationDTO.getPassword());
+        User user = new User(registrationDTO.getEmail(), registrationDTO.getFirstName(), registrationDTO.getLastName(),
+                salt, hashedPassword);
         try {
-            userAccess.insertUser(registrationDTO);
-            return new ResponseEntity<>(String.format("Account %s created", registrationDTO.getUser().getEmail()), HttpStatus.CREATED);
+            userAccess.insertUser(user);
         } catch (SQLException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>("Account could not be created", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new InternalException("Account could not be created");
         }
     }
 }
