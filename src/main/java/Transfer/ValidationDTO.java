@@ -1,5 +1,6 @@
 package Transfer;
 
+@SuppressWarnings("unused")
 public class ValidationDTO {
     private String email;
     private String token;

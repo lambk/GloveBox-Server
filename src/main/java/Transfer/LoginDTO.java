@@ -1,5 +1,6 @@
 package Transfer;
 
+@SuppressWarnings("unused")
 public class LoginDTO {
     private String email;
     private String password;

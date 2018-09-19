@@ -1,5 +1,6 @@
 package Transfer;
 
+@SuppressWarnings("unused")
 public class TokenDTO {
     private String email;
     private String token;

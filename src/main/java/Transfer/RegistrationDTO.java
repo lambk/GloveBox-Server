@@ -4,6 +4,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
+@SuppressWarnings("unused")
 public class RegistrationDTO {
     @NotEmpty
     @Email
