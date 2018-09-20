@@ -3,9 +3,7 @@ package Service;
 import Access.IUserAccess;
 import Model.User;
 import Transfer.LoginDTO;
-import Transfer.LogoutDTO;
 import Transfer.TokenDTO;
-import Transfer.ValidationDTO;
 import Utility.Exceptions.InternalServerErrorException;
 import Utility.Exceptions.UnauthorizedException;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -60,27 +58,28 @@ public class AuthService implements IAuthService {
      * Checks the token given in the Logout Transfer object against the matching record in the database.
      * If a token from the database cannot be found or the tokens do not match, a 401 is returned
      *
-     * @param logoutDTO The logout details (email, token) from the controller
+     * @param email The users email address
+     * @param token The applications current token
      */
     @Override
-    public void logout(LogoutDTO logoutDTO) throws UnauthorizedException {
-        String token = userAccess.getTokenDetails(logoutDTO.getEmail());
-        if (token == null || !token.equals(logoutDTO.getToken())) {
+    public void logout(String email, String token) throws UnauthorizedException {
+        if (!isTokenValid(email, token)) {
             throw new UnauthorizedException("The provided email/token combination is incorrect");
         }
-        userAccess.deleteToken(logoutDTO.getEmail());
+        userAccess.deleteToken(email);
     }
 
     /**
      * Checks the given token against the current token in the database for the record with the given email
      * Returns HTTP OK or HTTP Unauthorised depending on whether the given token is up to date or not (respectively)
      *
-     * @param validationDTO The validation transfer object from the controller
+     * @param email The users email address
+     * @param token The applications current token
      * @return Boolean stating whether the token is valid
      */
     @Override
-    public boolean validateToken(ValidationDTO validationDTO) {
-        String token = userAccess.getTokenDetails(validationDTO.getEmail());
-        return token != null && token.equals(validationDTO.getToken());
+    public boolean isTokenValid(String email, String token) {
+        String dbToken = userAccess.getTokenDetails(email);
+        return dbToken != null && dbToken.equals(token);
     }
 }

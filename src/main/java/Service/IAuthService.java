@@ -1,16 +1,14 @@
 package Service;
 
 import Transfer.LoginDTO;
-import Transfer.LogoutDTO;
 import Transfer.TokenDTO;
-import Transfer.ValidationDTO;
 import Utility.Exceptions.InternalServerErrorException;
 import Utility.Exceptions.UnauthorizedException;
 
 public interface IAuthService {
     TokenDTO login(LoginDTO loginDTO) throws UnauthorizedException, InternalServerErrorException;
 
-    void logout(LogoutDTO logoutDTO) throws UnauthorizedException;
+    void logout(String email, String token) throws UnauthorizedException;
 
-    boolean validateToken(ValidationDTO validationDTO);
+    boolean isTokenValid(String email, String token);
 }
