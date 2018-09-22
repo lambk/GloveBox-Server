@@ -1,6 +1,6 @@
 package Model;
 
-import java.time.LocalDate;
+import java.util.Date;
 
 public class Vehicle {
     private String plate;
@@ -8,10 +8,10 @@ public class Vehicle {
     private String model;
     private int year;
     private int odometer;
-    private LocalDate wofExpiry;
+    private Date wofExpiry;
     private String countryRegistered;
 
-    public Vehicle(String plate, String make, String model, int year, int odometer, LocalDate wofExpiry, String countryRegistered) {
+    public Vehicle(String plate, String make, String model, int year, int odometer, Date wofExpiry, String countryRegistered) {
         this.plate = plate;
         this.make = make;
         this.model = model;
@@ -41,7 +41,7 @@ public class Vehicle {
         return odometer;
     }
 
-    public LocalDate getWofExpiry() {
+    public Date getWofExpiry() {
         return wofExpiry;
     }
 

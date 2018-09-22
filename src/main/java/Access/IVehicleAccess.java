@@ -5,7 +5,7 @@ import Model.Vehicle;
 import java.sql.SQLException;
 
 public interface IVehicleAccess {
-    Vehicle getVehicleByPlate();
+    Vehicle getVehicleByPlate(String plate);
 
     void insertVehicle(Vehicle vehicle) throws SQLException;
 
