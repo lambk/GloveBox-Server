@@ -2,7 +2,7 @@ package Controller;
 
 import Service.IUserService;
 import Transfer.RegistrationDTO;
-import jdk.nashorn.internal.runtime.regexp.joni.exception.InternalException;
+import Utility.Exceptions.InternalServerErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +35,7 @@ public class UserController {
             return new ResponseEntity<>("Account successfully created", HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        } catch (InternalException e) {
+        } catch (InternalServerErrorException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

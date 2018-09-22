@@ -3,7 +3,7 @@ package Service;
 import Access.IUserAccess;
 import Model.User;
 import Transfer.RegistrationDTO;
-import jdk.nashorn.internal.runtime.regexp.joni.exception.InternalException;
+import Utility.Exceptions.InternalServerErrorException;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,7 +31,7 @@ public class UserService implements IUserService {
      * @param registrationDTO The DTO containing the registration details
      */
     @Override
-    public void createUser(RegistrationDTO registrationDTO) throws IllegalArgumentException, InternalException {
+    public void createUser(RegistrationDTO registrationDTO) throws IllegalArgumentException, InternalServerErrorException {
         if (userAccess.getUser(registrationDTO.getEmail()) != null) {
             throw new IllegalArgumentException("Account already exists");
         }
@@ -42,7 +42,7 @@ public class UserService implements IUserService {
         try {
             userAccess.insertUser(user);
         } catch (SQLException e) {
-            throw new InternalException("Account could not be created");
+            throw new InternalServerErrorException("Account could not be created");
         }
     }
 }
