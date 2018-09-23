@@ -11,15 +11,7 @@ public class VehicleRegistrationDTO {
     private LocalDate wofExpiry;
     private String countryRegistered;
 
-    public VehicleRegistrationDTO(String plate, String make, String model, int year, int odometer, LocalDate wofExpiry, String countryRegistered) {
-        this.plate = plate;
-        this.make = make;
-        this.model = model;
-        this.year = year;
-        this.odometer = odometer;
-        this.wofExpiry = wofExpiry;
-        this.countryRegistered = countryRegistered;
-    }
+    public VehicleRegistrationDTO() {}
 
     public String getPlate() {
         return plate;

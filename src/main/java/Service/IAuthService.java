@@ -11,7 +11,7 @@ public interface IAuthService {
 
     void logout(String token);
 
-    User getUserByToken(String token) throws IllegalArgumentException;
+    User getUserByToken(String token);
 
     boolean isTokenValid(String token);
 

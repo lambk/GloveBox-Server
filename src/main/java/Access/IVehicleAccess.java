@@ -3,9 +3,12 @@ package Access;
 import Model.Vehicle;
 
 import java.sql.SQLException;
+import java.util.Set;
 
 public interface IVehicleAccess {
-    Vehicle getVehicleByPlate(String plate);
+    Vehicle getVehicle(String plate, int ownerId);
+
+    Set<Vehicle> getVehiclesByEmail(String email);
 
     void insertVehicle(Vehicle vehicle, int ownerId) throws SQLException;
 

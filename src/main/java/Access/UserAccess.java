@@ -55,6 +55,7 @@ public class UserAccess implements IUserAccess {
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 User user = new User();
+                user.setId(resultSet.getInt("id"));
                 user.setEmail(resultSet.getString("email"));
                 return user;
             }
@@ -102,7 +103,7 @@ public class UserAccess implements IUserAccess {
     @Override
     public void insertToken(String email, String token) throws SQLException {
         Connection connection = factory.getConnection();
-        PreparedStatement statement = connection.prepareStatement("{CALL add_token_for_email(?, ?)}");
+        PreparedStatement statement = connection.prepareStatement("{CALL add_token(?, ?)}");
         statement.setString(1, email);
         statement.setString(2, token);
         statement.executeUpdate();

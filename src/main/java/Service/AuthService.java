@@ -65,12 +65,8 @@ public class AuthService implements IAuthService {
     }
 
     @Override
-    public User getUserByToken(String token) throws IllegalArgumentException {
-        User user = userAccess.getUserByToken(token);
-        if (user == null) {
-            throw new IllegalArgumentException("User with the given token not found");
-        }
-        return user;
+    public User getUserByToken(String token) {
+        return userAccess.getUserByToken(token);
     }
 
     /**

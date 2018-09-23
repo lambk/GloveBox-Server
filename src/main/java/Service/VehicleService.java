@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
+import java.util.Set;
 
 @Service
 public class VehicleService implements IVehicleService {
@@ -28,10 +29,13 @@ public class VehicleService implements IVehicleService {
     }
 
     @Override
-    public void registerVehicle(VehicleRegistrationDTO vehicleRegistrationDTO, String token) throws UnauthorizedException, InternalServerErrorException {
+    public void registerVehicle(VehicleRegistrationDTO vehicleRegistrationDTO, String token) throws UnauthorizedException, IllegalArgumentException, InternalServerErrorException {
         User user = authService.getUserByToken(token);
         if (user == null) {
             throw new UnauthorizedException("The given token is not valid");
+        }
+        if (getVehicleInfo(vehicleRegistrationDTO.getPlate(), user.getId()) != null) {
+            throw new IllegalArgumentException("This user already registered a vehicle with the same plate");
         }
         Vehicle vehicle = vehicleMapper.map(vehicleRegistrationDTO);
         try {
@@ -43,12 +47,13 @@ public class VehicleService implements IVehicleService {
     }
 
     @Override
-    public Vehicle getVehicleInfo(String plate) throws IllegalArgumentException {
-        Vehicle vehicle = vehicleAccess.getVehicleByPlate(plate);
-        if (vehicle == null) {
-            throw new IllegalArgumentException("The vehicle with the given plate cannot be found");
-        } else {
-            return vehicle;
-        }
+    public Vehicle getVehicleInfo(String plate, int ownerId) {
+        return vehicleAccess.getVehicle(plate, ownerId);
+    }
+
+    @Override
+    public Set<Vehicle> getUsersVehicles(String email) {
+        Set<Vehicle> vehicles = vehicleAccess.getVehiclesByEmail(email);
+        return vehicles;
     }
 }
