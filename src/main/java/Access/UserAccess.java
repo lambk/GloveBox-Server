@@ -29,7 +29,7 @@ public class UserAccess implements IUserAccess {
     @Override
     public User getUser(String email) {
         try (Connection connection = factory.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("{CALL get_user_by_email(?)}");
+            PreparedStatement statement = connection.prepareStatement("{CALL get_user(?)}");
             statement.setString(1, email);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
@@ -50,7 +50,7 @@ public class UserAccess implements IUserAccess {
     @Override
     public User getUserByToken(String token) {
         try (Connection connection = factory.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("{CALL get_user_by_token(?)}");
+            PreparedStatement statement = connection.prepareStatement("{CALL get_user_with_token(?)}");
             statement.setString(1, token);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
@@ -76,7 +76,7 @@ public class UserAccess implements IUserAccess {
     @Override
     public User getUserAuthDetails(String email) {
         try (Connection connection = factory.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("{CALL get_auth_by_email(?)}");
+            PreparedStatement statement = connection.prepareStatement("{CALL get_user_auth(?)}");
             statement.setString(1, email);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
