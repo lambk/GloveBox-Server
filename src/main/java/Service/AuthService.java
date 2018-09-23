@@ -36,7 +36,7 @@ public class AuthService implements IAuthService {
      */
     @Override
     public TokenDTO login(LoginDTO loginDTO) throws UnauthorizedException, InternalServerErrorException {
-        User authentication = userAccess.getAuthenticationDetails(loginDTO.getEmail());
+        User authentication = userAccess.getUserAuthDetails(loginDTO.getEmail());
         if (authentication == null) {
             throw new UnauthorizedException("The provided email/password combination is incorrect");
         }
@@ -55,31 +55,24 @@ public class AuthService implements IAuthService {
     }
 
     /**
-     * Checks the token given in the Logout Transfer object against the matching record in the database.
-     * If a token from the database cannot be found or the tokens do not match, a 401 is returned
+     * Removes the token for the user with the given token
      *
-     * @param email The users email address
      * @param token The applications current token
      */
     @Override
-    public void logout(String email, String token) throws UnauthorizedException {
-        if (!isTokenValid(email, token)) {
-            throw new UnauthorizedException("The provided email/token combination is incorrect");
-        }
-        userAccess.deleteToken(email);
+    public void logout(String token) {
+        userAccess.deleteToken(token);
     }
 
     /**
-     * Checks the given token against the current token in the database for the record with the given email
+     * Checks the given token against the database to see if the token exists
      * Returns HTTP OK or HTTP Unauthorised depending on whether the given token is up to date or not (respectively)
      *
-     * @param email The users email address
      * @param token The applications current token
      * @return Boolean stating whether the token is valid
      */
     @Override
-    public boolean isTokenValid(String email, String token) {
-        String dbToken = userAccess.getTokenDetails(email);
-        return dbToken != null && dbToken.equals(token);
+    public boolean isTokenValid(String token) {
+        return userAccess.getUserByToken(token) != null;
     }
 }

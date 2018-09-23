@@ -1,8 +1,12 @@
 package Service;
 
+import Model.User;
 import Transfer.RegistrationDTO;
-import jdk.nashorn.internal.runtime.regexp.joni.exception.InternalException;
+import Utility.Exceptions.InternalServerErrorException;
 
 public interface IUserService {
-    void createUser(RegistrationDTO registrationDTO) throws IllegalArgumentException, InternalException;
+
+    User getUserByToken(String token) throws IllegalArgumentException;
+
+    void createUser(RegistrationDTO registrationDTO) throws IllegalArgumentException, InternalServerErrorException;
 }
