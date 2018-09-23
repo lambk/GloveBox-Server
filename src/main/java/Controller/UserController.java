@@ -24,7 +24,7 @@ public class UserController {
     /**
      * Calls the service layer to attempt to create the given user.
      *
-     * @param userInfo The request body containing the user property fields, and password
+     * @param userInfo The request body containing the registration details
      * @return The ResponseEntity outcome
      */
     @CrossOrigin(methods = {RequestMethod.POST})

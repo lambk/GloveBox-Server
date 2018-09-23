@@ -26,13 +26,13 @@ public class UserService implements IUserService {
     }
 
     /**
-     * Checks if the user can be created.
-     * The following actions are taken:
+     * Attempts to add a new user to the database.
+     * Before insert, the following actions are taken:
      * - The database is checked for the presence of a user with the same email
      * - A random salt is generated and used to hash the password given in the Registration DTO
      * - The new User object is sent to the access layer to be inserted
      *
-     * @param registrationDTO The DTO containing the registration details
+     * @param registrationDTO The registration details
      */
     @Override
     public void createUser(RegistrationDTO registrationDTO) throws IllegalArgumentException, InternalServerErrorException {

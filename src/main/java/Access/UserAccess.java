@@ -20,11 +20,12 @@ public class UserAccess implements IUserAccess {
     }
 
     /**
-     * Fetches a user record from the database that has the given email.
-     * Returns a new User object if a record is found, else returns null
+     * Fetches the user from the database with the given email.
+     * Returns a user object with the id, email, firstname, and lastname. All other fields are null
+     * If no user has the given email, null is returned
      *
-     * @param email The email to find records using
-     * @return A matching User record if found, else null
+     * @param email The email to use to find the user
+     * @return The matching user if found, else null
      */
     @Override
     public User getUser(String email) {
@@ -47,6 +48,14 @@ public class UserAccess implements IUserAccess {
         }
     }
 
+    /**
+     * Fetches the user from the database that currently has the given token.
+     * Returns a user object with the id and email. All other fields are null.
+     * If no user has the given token, null is returned
+     *
+     * @param token The token to use to find the user
+     * @return The matching user if found, else null
+     */
     @Override
     public User getUserByToken(String token) {
         try (Connection connection = factory.getConnection()) {
@@ -67,11 +76,14 @@ public class UserAccess implements IUserAccess {
     }
 
     /**
-     * Fetches the details needed for login authentication for the record with the given email
-     * The authentication details include the salt and (hashed) password
+     * Fetches the user from the database with the given email.
+     * Returns a user object with only the salt and password field set. All other fields are null.
+     * If no user has the given email, null is returned
+     * <p>
+     * The returned user object is used for verifying an attempted login
      *
-     * @param email The email to find records using
-     * @return The User object with the salt and password fields
+     * @param email The email to use to find the user
+     * @return The matching user if found, else null
      */
     @Override
     public User getUserAuthDetails(String email) {
@@ -93,12 +105,12 @@ public class UserAccess implements IUserAccess {
     }
 
     /**
-     * Inserts a given token into the database for the record with the given email. Called when
-     * a user has successfully logged in
+     * Inserts a given token into the database for the user with the given email.
+     * Called when a user has successfully logged in
      *
-     * @param email The email to find which record to add the token under
-     * @param token The new token
-     * @throws SQLException If there was an error performing the operation
+     * @param email The email to find which user to add the token for
+     * @param token The token to insert
+     * @throws SQLException If there was an error with the sql operation
      */
     @Override
     public void insertToken(String email, String token) throws SQLException {
@@ -110,9 +122,11 @@ public class UserAccess implements IUserAccess {
     }
 
     /**
-     * Deletes the token for the given email
+     * Removes the token for the given email.
+     * If no user has the given token, the database remains unchanged, and the method gives no error feedback to
+     * its caller
      *
-     * @param token the token to clear
+     * @param token the token to find which user to remove the token for
      */
     @Override
     public void deleteToken(String token) {
@@ -126,11 +140,11 @@ public class UserAccess implements IUserAccess {
     }
 
     /**
-     * Attempts to insert a user into the database. These details are then used to
-     * call the insert_user stored procedure.
+     * Attempts to insert a user into the database.
+     * The salt should already be generated, and the password hashed prior to this operation
      *
      * @param user The new User information
-     * @throws SQLException Used to provide feedback on the outcome to the service layer
+     * @throws SQLException If there was an error with the sql operation
      */
     @Override
     public void insertUser(User user) throws SQLException {

@@ -19,10 +19,10 @@ public class VehicleAccess implements IVehicleAccess {
     }
 
     /**
-     * Fetches a vehicle record from the database that has the given plate.
+     * Fetches a vehicle record from the database that has the given plate and owner id.
      * Returns a new Vehicle object if a record is found, else returns null
      *
-     * @param plate The plate to find records using
+     * @param plate   The plate to find records using
      * @param ownerId The id of the owner
      * @return The matching vehicle (if found), else null
      */
@@ -49,6 +49,12 @@ public class VehicleAccess implements IVehicleAccess {
         }
     }
 
+    /**
+     * Fetches a set of vehicles that are linked the user with the given email
+     *
+     * @param email The email of the account to filter vehicles by
+     * @return The set of vehicles
+     */
     @Override
     public Set<Vehicle> getVehiclesByEmail(String email) {
         Set<Vehicle> vehicles = new HashSet<>();
@@ -67,6 +73,13 @@ public class VehicleAccess implements IVehicleAccess {
         }
     }
 
+    /**
+     * Inserts the given vehicle into the Vehicle table, and linking the vehicle to the user account with the given owner id
+     *
+     * @param vehicle The new vehicle to add
+     * @param ownerId The owner id to use for the owner_id field
+     * @throws SQLException If there is an error with the sql operation
+     */
     @Override
     public void insertVehicle(Vehicle vehicle, int ownerId) throws SQLException {
         Connection connection = factory.getConnection();

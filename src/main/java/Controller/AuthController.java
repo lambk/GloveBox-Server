@@ -24,7 +24,7 @@ public class AuthController {
     /**
      * Calls the service layer to attempt to login using the LoginDTO provided in the request body
      *
-     * @param loginDTO The login details from the client
+     * @param loginDTO The login details
      * @return The ResponseEntity outcome
      */
     @CrossOrigin(methods = {RequestMethod.POST})

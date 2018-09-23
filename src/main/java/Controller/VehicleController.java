@@ -21,6 +21,13 @@ public class VehicleController {
         this.vehicleService = vehicleService;
     }
 
+    /**
+     * Calls the service layer, passing the vehicle registration details, and the login token from the request header
+     *
+     * @param vehicleInfo The vehicle registration details
+     * @param token       The current set token, which ties the registration to a given account
+     * @return The ResponseEntity with the outcome of the insert attempt
+     */
     @CrossOrigin(methods = {RequestMethod.POST})
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = "application/json")
     public ResponseEntity<String> registerVehicle(@RequestBody VehicleRegistrationDTO vehicleInfo, @RequestHeader("token") String token) {
@@ -36,6 +43,14 @@ public class VehicleController {
         }
     }
 
+    /**
+     * Returns a vehicle object that has the given plate, and belongs to the user with the given id
+     * If no vehicle is found, a 404 is returned
+     *
+     * @param ownerId The id of the owner
+     * @param plate   The plate of the vehicle to fetch
+     * @return The ResponseEntity outcome of the fetch attempt
+     */
     @CrossOrigin(methods = {RequestMethod.GET})
     @RequestMapping(value = "/{ownerId}/{plate}", method = RequestMethod.GET, consumes = "application/json")
     public ResponseEntity<?> getVehicle(@PathVariable("ownerId") int ownerId, @PathVariable("plate") String plate) {
