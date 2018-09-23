@@ -1,6 +1,8 @@
 package Service;
 
 import Access.IUserAccess;
+import Mappers.IMapper;
+import Mappers.RegistrationMapper;
 import Model.User;
 import Transfer.RegistrationDTO;
 import Utility.Exceptions.InternalServerErrorException;
@@ -15,19 +17,12 @@ import java.util.UUID;
 public class UserService implements IUserService {
 
     private final IUserAccess userAccess;
+    private final IMapper<RegistrationDTO, User> registrationMapper;
 
     @Autowired
     public UserService(IUserAccess userAccess) {
         this.userAccess = userAccess;
-    }
-
-    @Override
-    public User getUserByToken(String token) throws IllegalArgumentException {
-        User user = userAccess.getUserByToken(token);
-        if (user == null) {
-            throw new IllegalArgumentException("User with the given token not found");
-        }
-        return user;
+        registrationMapper = new RegistrationMapper();
     }
 
     /**
@@ -46,8 +41,9 @@ public class UserService implements IUserService {
         }
         String salt = DigestUtils.sha256Hex(UUID.randomUUID().toString());
         String hashedPassword = DigestUtils.sha256Hex(salt + registrationDTO.getPassword());
-        User user = new User(registrationDTO.getEmail(), registrationDTO.getFirstName(), registrationDTO.getLastName(),
-                salt, hashedPassword);
+        User user = registrationMapper.map(registrationDTO);
+        user.setSalt(salt);
+        user.setPassword(hashedPassword);
         try {
             userAccess.insertUser(user);
         } catch (SQLException e) {

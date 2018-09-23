@@ -64,6 +64,11 @@ public class AuthService implements IAuthService {
         userAccess.deleteToken(token);
     }
 
+    @Override
+    public User getUserByToken(String token) {
+        return userAccess.getUserByToken(token);
+    }
+
     /**
      * Checks the given token against the database to see if the token exists
      * Returns HTTP OK or HTTP Unauthorised depending on whether the given token is up to date or not (respectively)
@@ -74,5 +79,19 @@ public class AuthService implements IAuthService {
     @Override
     public boolean isTokenValid(String token) {
         return userAccess.getUserByToken(token) != null;
+    }
+
+    /**
+     * Checks whether the user with the given token has the same email as the argument
+     * If so, returns true, else returns false.
+     * If no user exists with the given token, returns false
+     *
+     * @param token The token to find the user by
+     * @param email The email to check that it matches the found user
+     * @return Whether the token/email combination matches a user in the database
+     */
+    @Override
+    public boolean doesTokenMatchEmail(String token, String email) {
+        return userAccess.getUserByToken(token).getEmail().equals(email);
     }
 }
