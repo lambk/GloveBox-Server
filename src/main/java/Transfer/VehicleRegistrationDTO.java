@@ -3,8 +3,6 @@ package Transfer;
 import java.time.LocalDate;
 
 public class VehicleRegistrationDTO {
-    private String email;
-    private String token;
     private String plate;
     private String make;
     private String model;

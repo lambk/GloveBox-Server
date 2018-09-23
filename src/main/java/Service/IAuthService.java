@@ -1,5 +1,6 @@
 package Service;
 
+import Model.User;
 import Transfer.LoginDTO;
 import Transfer.TokenDTO;
 import Utility.Exceptions.InternalServerErrorException;
@@ -10,5 +11,9 @@ public interface IAuthService {
 
     void logout(String token);
 
+    User getUserByToken(String token) throws IllegalArgumentException;
+
     boolean isTokenValid(String token);
+
+    boolean doesTokenMatchEmail(String token, String email);
 }

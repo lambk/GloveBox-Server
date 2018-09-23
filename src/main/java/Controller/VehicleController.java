@@ -2,7 +2,9 @@ package Controller;
 
 import Model.Vehicle;
 import Service.IVehicleService;
+import Transfer.VehicleRegistrationDTO;
 import Utility.Exceptions.InternalServerErrorException;
+import Utility.Exceptions.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,21 @@ public class VehicleController {
         this.vehicleService = vehicleService;
     }
 
+    @CrossOrigin(methods = {RequestMethod.POST})
+    @RequestMapping(value = "", method = RequestMethod.POST, consumes = "application/json")
+    public ResponseEntity<String> registerVehicle(@RequestBody VehicleRegistrationDTO vehicleInfo, @RequestHeader("token") String token) {
+        try {
+            vehicleService.registerVehicle(vehicleInfo, token);
+            return new ResponseEntity<>("Vehicle registered successfully", HttpStatus.CREATED);
+        } catch (InternalServerErrorException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (UnauthorizedException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+        }
+    }
+
     @CrossOrigin(methods = {RequestMethod.GET})
     @RequestMapping(value = "/{plate}", method = RequestMethod.GET, consumes = "application/json")
     public ResponseEntity<?> getVehicle(@PathVariable("plate") String plate) {
@@ -27,8 +44,6 @@ public class VehicleController {
             return new ResponseEntity<>(vehicle, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        } catch (InternalServerErrorException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

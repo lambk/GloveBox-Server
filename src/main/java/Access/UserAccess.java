@@ -33,9 +33,12 @@ public class UserAccess implements IUserAccess {
             statement.setString(1, email);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                return new User(resultSet.getString("email"),
+                return new User(resultSet.getInt("id"),
+                        resultSet.getString("email"),
                         resultSet.getString("firstName"),
-                        resultSet.getString("lastName"));
+                        resultSet.getString("lastName"),
+                        null,
+                        null);
             }
             return null;
         } catch (SQLException e) {
