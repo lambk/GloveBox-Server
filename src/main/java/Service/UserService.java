@@ -21,6 +21,15 @@ public class UserService implements IUserService {
         this.userAccess = userAccess;
     }
 
+    @Override
+    public User getUserByToken(String token) throws IllegalArgumentException {
+        User user = userAccess.getUserByToken(token);
+        if (user == null) {
+            throw new IllegalArgumentException("User with the given token not found");
+        }
+        return user;
+    }
+
     /**
      * Checks if the user can be created.
      * The following actions are taken:

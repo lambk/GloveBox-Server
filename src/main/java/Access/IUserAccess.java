@@ -8,9 +8,9 @@ public interface IUserAccess {
 
     User getUser(String email);
 
-    User getAuthenticationDetails(String email);
+    User getUserByToken(String token);
 
-    String getTokenDetails(String email);
+    User getUserAuthDetails(String email);
 
     void insertToken(String email, String token) throws SQLException;
 

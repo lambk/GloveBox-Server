@@ -44,23 +44,15 @@ public class UserAccess implements IUserAccess {
         }
     }
 
-    /**
-     * Fetches the details needed for login authentication for the record with the given email
-     * The authentication details include the salt and (hashed) password
-     *
-     * @param email The email to find records using
-     * @return The User object with the salt and password fields
-     */
     @Override
-    public User getAuthenticationDetails(String email) {
+    public User getUserByToken(String token) {
         try (Connection connection = factory.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("{CALL get_auth_by_email(?)}");
-            statement.setString(1, email);
+            PreparedStatement statement = connection.prepareStatement("{CALL get_user_by_token(?)}");
+            statement.setString(1, token);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 User user = new User();
-                user.setSalt(resultSet.getString("salt"));
-                user.setPassword(resultSet.getString("password"));
+                user.setEmail(resultSet.getString("email"));
                 return user;
             }
             return null;
@@ -71,20 +63,23 @@ public class UserAccess implements IUserAccess {
     }
 
     /**
-     * Fetches the token for the record with the given email. This is needed in the AuthService to check
-     * that the user has the latest token when attempting to log out
+     * Fetches the details needed for login authentication for the record with the given email
+     * The authentication details include the salt and (hashed) password
      *
      * @param email The email to find records using
-     * @return The token (String) for that email
+     * @return The User object with the salt and password fields
      */
     @Override
-    public String getTokenDetails(String email) {
+    public User getUserAuthDetails(String email) {
         try (Connection connection = factory.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("{CALL get_token_by_email(?)}");
+            PreparedStatement statement = connection.prepareStatement("{CALL get_auth_by_email(?)}");
             statement.setString(1, email);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                return resultSet.getString("token");
+                User user = new User();
+                user.setSalt(resultSet.getString("salt"));
+                user.setPassword(resultSet.getString("password"));
+                return user;
             }
             return null;
         } catch (SQLException e) {
@@ -113,13 +108,13 @@ public class UserAccess implements IUserAccess {
     /**
      * Deletes the token for the given email
      *
-     * @param email The email to find which record to delete the token under
+     * @param token the token to clear
      */
     @Override
-    public void deleteToken(String email) {
+    public void deleteToken(String token) {
         try (Connection connection = factory.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("{CALL delete_token_for_email(?)}");
-            statement.setString(1, email);
+            PreparedStatement statement = connection.prepareStatement("{CALL delete_token(?)}");
+            statement.setString(1, token);
             statement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

@@ -44,32 +44,26 @@ public class AuthController {
     /**
      * Calls the service layer to attempt to logout using the LogoutDTO provided in the request body
      *
-     * @param email The users email address
      * @param token The current token stored on the client
      * @return The ResponseEntity outcome
      */
     @CrossOrigin(methods = {RequestMethod.POST})
     @RequestMapping(value = "/logout", method = RequestMethod.POST, consumes = "application/json")
-    public ResponseEntity<String> logout(@RequestBody String email, @RequestHeader("token") String token) {
-        try {
-            authService.logout(email, token);
-            return new ResponseEntity<>("Successfully logged out", HttpStatus.OK);
-        } catch (UnauthorizedException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
-        }
+    public ResponseEntity<String> logout(@RequestHeader("token") String token) {
+        authService.logout(token);
+        return new ResponseEntity<>("Successfully logged out", HttpStatus.OK);
     }
 
     /**
      * Calls the service layer to validate the given token against the token in the database
      *
-     * @param email The users email address
      * @param token The current token stored on the client
      * @return The ResponseEntity outcome
      */
     @CrossOrigin(methods = {RequestMethod.POST})
     @RequestMapping(value = "/validate", method = RequestMethod.POST, consumes = "application/json")
-    public ResponseEntity<String> validate(@RequestBody String email, @RequestHeader("token") String token) {
-        if (authService.isTokenValid(email, token)) {
+    public ResponseEntity<String> validate(@RequestHeader("token") String token) {
+        if (authService.isTokenValid(token)) {
             return new ResponseEntity<>("Token is valid", HttpStatus.OK);
         } else {
             return new ResponseEntity<>("Token is invalid", HttpStatus.UNAUTHORIZED);
