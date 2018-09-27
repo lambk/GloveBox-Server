@@ -11,6 +11,9 @@ public class Vehicle {
     private LocalDate wofExpiry;
     private String countryRegistered;
 
+    public Vehicle() {
+    }
+
     public Vehicle(String plate, String make, String model, int year, int odometer, LocalDate wofExpiry, String countryRegistered) {
         this.plate = plate;
         this.make = make;
