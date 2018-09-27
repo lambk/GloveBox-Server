@@ -77,4 +77,19 @@ public class VehicleServiceTest {
         } catch (UnauthorizedException ignored) {
         }
     }
+
+    @Test
+    public void testGettingExistingVehicle() {
+        Vehicle returned = new Vehicle("ABC123", "Toyota", "Celica", 1994, 200000, LocalDate.now(), "New Zealand");
+        when(vehicleAccess.getVehicle("ABC123", signedInUser.getId())).thenReturn(returned);
+        Vehicle fetched = vehicleAccess.getVehicle("ABC123", signedInUser.getId());
+        Assert.assertEquals(returned, fetched);
+    }
+
+    @Test
+    public void testGettingNonexistingVehicle() {
+        when(vehicleAccess.getVehicle("ABC123", signedInUser.getId())).thenReturn(null);
+        Vehicle fetched = vehicleAccess.getVehicle("ABC123", signedInUser.getId());
+        Assert.assertNull(fetched);
+    }
 }
