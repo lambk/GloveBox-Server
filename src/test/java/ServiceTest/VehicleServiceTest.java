@@ -45,11 +45,9 @@ public class VehicleServiceTest {
     @Test
     public void testDuplicateVehicleRegistration() {
         when(vehicleAccess.getVehicle("ABC123", signedInUser.getId())).thenReturn(new Vehicle());
-        VehicleRegistrationDTO vehicleRegistration1 = new VehicleRegistrationDTO("ABC123", "Toyota", "Corolla", 2000, 10000, LocalDate.now(), "New Zealand");
-        VehicleRegistrationDTO vehicleRegistration2 = new VehicleRegistrationDTO("ABC123", "Honda", "Integra", 2000, 10000, LocalDate.now(), "New Zealand");
+        VehicleRegistrationDTO vehicleRegistration = new VehicleRegistrationDTO("ABC123", "Toyota", "Corolla", 2000, 10000, LocalDate.now(), "New Zealand");
         try {
-            vehicleService.registerVehicle(vehicleRegistration1, loginToken);
-            vehicleService.registerVehicle(vehicleRegistration2, loginToken);
+            vehicleService.registerVehicle(vehicleRegistration, loginToken);
         } catch (UnauthorizedException | InternalServerErrorException e) {
             Assert.fail();
         } catch (IllegalArgumentException ignored) {
@@ -76,5 +74,20 @@ public class VehicleServiceTest {
             Assert.fail();
         } catch (UnauthorizedException ignored) {
         }
+    }
+
+    @Test
+    public void testGettingExistingVehicle() {
+        Vehicle returned = new Vehicle("ABC123", "Toyota", "Celica", 1994, 200000, LocalDate.now(), "New Zealand");
+        when(vehicleAccess.getVehicle("ABC123", signedInUser.getId())).thenReturn(returned);
+        Vehicle fetched = vehicleAccess.getVehicle("ABC123", signedInUser.getId());
+        Assert.assertEquals(returned, fetched);
+    }
+
+    @Test
+    public void testGettingNonexistingVehicle() {
+        when(vehicleAccess.getVehicle("ABC123", signedInUser.getId())).thenReturn(null);
+        Vehicle fetched = vehicleAccess.getVehicle("ABC123", signedInUser.getId());
+        Assert.assertNull(fetched);
     }
 }

@@ -18,6 +18,13 @@ public class RegistrationDTO {
 
     public RegistrationDTO() {}
 
+    public RegistrationDTO(@NotEmpty @Email String email, @NotEmpty String firstName, @NotEmpty String lastName, @Size(min = 6, max = 100) String password) {
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.password = password;
+    }
+
     public String getEmail() {
         return email;
     }
