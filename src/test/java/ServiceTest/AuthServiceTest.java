@@ -47,9 +47,21 @@ public class AuthServiceTest {
     }
 
     @Test
-    public void testUnsuccessfulLogin() {
+    public void testUnsuccessfulLoginDueToPassword() {
         LoginDTO loginDTO = new LoginDTO("email@domain.com", "p4ssw0rd");
         when(userAccess.getUserAuthDetails(loginDTO.getEmail())).thenReturn(authenticationDetails);
+        try {
+            authService.login(loginDTO);
+            Assert.fail();
+        } catch (InternalServerErrorException e) {
+            Assert.fail();
+        } catch (UnauthorizedException ignored) {
+        }
+    }
+
+    @Test
+    public void testUnsuccessfulLoginDueToEmail() {
+        LoginDTO loginDTO = new LoginDTO("bob@domain.com", "password");
         try {
             authService.login(loginDTO);
             Assert.fail();
