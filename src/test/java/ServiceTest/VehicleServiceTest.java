@@ -80,14 +80,31 @@ public class VehicleServiceTest {
     public void testGettingExistingVehicle() {
         Vehicle returned = new Vehicle("ABC123", "Toyota", "Celica", 1994, 200000, LocalDate.now(), "New Zealand");
         when(vehicleAccess.getVehicle("ABC123", signedInUser.getId())).thenReturn(returned);
-        Vehicle fetched = vehicleAccess.getVehicle("ABC123", signedInUser.getId());
-        Assert.assertEquals(returned, fetched);
+        try {
+            Vehicle fetched = vehicleService.getVehicleInfo("ABC123", signedInUser.getId(), loginToken);
+            Assert.assertEquals(returned, fetched);
+        } catch (UnauthorizedException e) {
+            Assert.fail();
+        }
     }
 
     @Test
     public void testGettingNonexistingVehicle() {
         when(vehicleAccess.getVehicle("ABC123", signedInUser.getId())).thenReturn(null);
-        Vehicle fetched = vehicleAccess.getVehicle("ABC123", signedInUser.getId());
-        Assert.assertNull(fetched);
+        try {
+            Vehicle fetched = vehicleService.getVehicleInfo("ABC123", signedInUser.getId(), loginToken);
+            Assert.assertNull(fetched);
+        } catch (UnauthorizedException e) {
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void testGettingExistingVehicleUnauthorised() {
+        try {
+            vehicleService.getVehicleInfo("ABC123", signedInUser.getId(), "Some token");
+            Assert.fail();
+        } catch (UnauthorizedException ignored) {
+        }
     }
 }
