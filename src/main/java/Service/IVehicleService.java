@@ -9,9 +9,9 @@ import java.util.Set;
 
 public interface IVehicleService {
 
-    void registerVehicle(VehicleRegistrationDTO vehicleRegistrationDTO, String token) throws UnauthorizedException, IllegalArgumentException, InternalServerErrorException;
+    void registerVehicle(VehicleRegistrationDTO vehicleRegistrationDTO, int ownerId, String token) throws UnauthorizedException, IllegalArgumentException, InternalServerErrorException;
 
-    Vehicle getVehicleInfo(String plate, int ownerId);
+    Vehicle getVehicleInfo(String plate, int ownerId, String token) throws UnauthorizedException;
 
     Set<Vehicle> getUsersVehicles(String email);
 }

@@ -68,38 +68,27 @@ public class AuthService implements IAuthService {
     }
 
     /**
+     * Checks the given token against the database to see if the token matches the user with the given id.
+     * Returns whether the token is valid by determining if the user currently has that token
+     *
+     * @param token  The access token
+     * @param userID The ID of the user
+     * @return Whether the user currently has that token
+     */
+    @Override
+    public boolean isTokenValid(String token, int userID) {
+        User user = getUserByToken(token);
+        return user != null && user.getId() == userID;
+    }
+
+    /**
      * Fetches the user object that currently contains the given token.
      *
      * @param token The token to find the user
      * @return The matched user if found, else null
      */
-    @Override
-    public User getUserByToken(String token) {
+    private User getUserByToken(String token) {
         return userAccess.getUserByToken(token);
     }
 
-    /**
-     * Checks the given token against the database to see if the token exists.
-     * Returns whether the token is valid by determining if a user currently has that token
-     *
-     * @param token The token to find a user
-     * @return Whether any user currently has that token
-     */
-    @Override
-    public boolean isTokenValid(String token) {
-        return userAccess.getUserByToken(token) != null;
-    }
-
-    /**
-     * Returns true if there is a user in the database with the same email, and same token set.
-     * If no user exists with the given token, returns false
-     *
-     * @param token The token used to verify a match
-     * @param email The email used to verify a match
-     * @return Whether the token/email combination matches a user in the database
-     */
-    @Override
-    public boolean doesTokenMatchEmail(String token, String email) {
-        return userAccess.getUserByToken(token).getEmail().equals(email);
-    }
 }

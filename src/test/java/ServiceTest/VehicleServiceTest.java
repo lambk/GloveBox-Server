@@ -39,7 +39,8 @@ public class VehicleServiceTest {
     public void setUp() {
         signedInUser = new User(1, "email@domain.com", "First", "Last");
         loginToken = "Token";
-        when(authService.getUserByToken(loginToken)).thenReturn(signedInUser);
+        // Treat as a valid token by default
+        when(authService.isTokenValid(loginToken, signedInUser.getId())).thenReturn(true);
     }
 
     @Test
@@ -47,7 +48,7 @@ public class VehicleServiceTest {
         when(vehicleAccess.getVehicle("ABC123", signedInUser.getId())).thenReturn(new Vehicle());
         VehicleRegistrationDTO vehicleRegistration = new VehicleRegistrationDTO("ABC123", "Toyota", "Corolla", 2000, 10000, LocalDate.now(), "New Zealand");
         try {
-            vehicleService.registerVehicle(vehicleRegistration, loginToken);
+            vehicleService.registerVehicle(vehicleRegistration, signedInUser.getId(), loginToken);
         } catch (UnauthorizedException | InternalServerErrorException e) {
             Assert.fail();
         } catch (IllegalArgumentException ignored) {
@@ -58,7 +59,7 @@ public class VehicleServiceTest {
     public void testSuccessfulVehicleRegistration() {
         VehicleRegistrationDTO vehicleRegistration1 = new VehicleRegistrationDTO("ABC123", "Toyota", "Corolla", 2000, 10000, LocalDate.now(), "New Zealand");
         try {
-            vehicleService.registerVehicle(vehicleRegistration1, loginToken);
+            vehicleService.registerVehicle(vehicleRegistration1, signedInUser.getId(), loginToken);
         } catch (UnauthorizedException | InternalServerErrorException | IllegalArgumentException e) {
             Assert.fail();
         }
@@ -68,7 +69,7 @@ public class VehicleServiceTest {
     public void testVehicleRegistrationWhenLoggedOut() {
         VehicleRegistrationDTO vehicleRegistration1 = new VehicleRegistrationDTO("ABC123", "Toyota", "Corolla", 2000, 10000, LocalDate.now(), "New Zealand");
         try {
-            vehicleService.registerVehicle(vehicleRegistration1, "A different token");
+            vehicleService.registerVehicle(vehicleRegistration1, signedInUser.getId(), "A different token");
             Assert.fail();
         } catch (InternalServerErrorException e) {
             Assert.fail();
@@ -80,14 +81,32 @@ public class VehicleServiceTest {
     public void testGettingExistingVehicle() {
         Vehicle returned = new Vehicle("ABC123", "Toyota", "Celica", 1994, 200000, LocalDate.now(), "New Zealand");
         when(vehicleAccess.getVehicle("ABC123", signedInUser.getId())).thenReturn(returned);
-        Vehicle fetched = vehicleAccess.getVehicle("ABC123", signedInUser.getId());
-        Assert.assertEquals(returned, fetched);
+        try {
+            Vehicle fetched = vehicleService.getVehicleInfo("ABC123", signedInUser.getId(), loginToken);
+            Assert.assertEquals(returned, fetched);
+        } catch (UnauthorizedException e) {
+            Assert.fail();
+        }
     }
 
     @Test
     public void testGettingNonexistingVehicle() {
         when(vehicleAccess.getVehicle("ABC123", signedInUser.getId())).thenReturn(null);
-        Vehicle fetched = vehicleAccess.getVehicle("ABC123", signedInUser.getId());
-        Assert.assertNull(fetched);
+        try {
+            Vehicle fetched = vehicleService.getVehicleInfo("ABC123", signedInUser.getId(), loginToken);
+            Assert.assertNull(fetched);
+        } catch (UnauthorizedException e) {
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void testGettingExistingVehicleUnauthorised() {
+        when(authService.isTokenValid(loginToken, signedInUser.getId())).thenReturn(false);
+        try {
+            vehicleService.getVehicleInfo("ABC123", signedInUser.getId(), loginToken);
+            Assert.fail();
+        } catch (UnauthorizedException ignored) {
+        }
     }
 }

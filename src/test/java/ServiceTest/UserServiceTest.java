@@ -6,7 +6,6 @@ import Service.UserService;
 import Transfer.RegistrationDTO;
 import Utility.Exceptions.InternalServerErrorException;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -24,15 +23,10 @@ public class UserServiceTest {
     @InjectMocks
     private UserService userService;
 
-    @Before
-    public void setUp() {
-
-    }
-
     @Test
     public void testValidUserRegistration() {
         RegistrationDTO registrationDTO = new RegistrationDTO("email@domain.com", "firstname", "lastname", "password");
-        when(userAccess.getUser(registrationDTO.getEmail())).thenReturn(null);
+        when(userAccess.getUserByEmail(registrationDTO.getEmail())).thenReturn(null);
         try {
             userService.createUser(registrationDTO);
         } catch (InternalServerErrorException | IllegalArgumentException e) {
@@ -43,7 +37,7 @@ public class UserServiceTest {
     @Test
     public void testDuplicateUserRegistration() {
         RegistrationDTO registration = new RegistrationDTO("email@domain.com", "firstname", "lastname", "password");
-        when(userAccess.getUser(registration.getEmail())).thenReturn(new User());
+        when(userAccess.getUserByEmail(registration.getEmail())).thenReturn(new User());
         try {
             userService.createUser(registration);
         } catch (InternalServerErrorException e) {

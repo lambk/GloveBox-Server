@@ -57,13 +57,14 @@ public class AuthController {
     /**
      * Calls the service layer to validate the given token against the token in the database
      *
-     * @param token The current token stored on the client
+     * @param token  The current token stored on the client
+     * @param userID The id of the user
      * @return The ResponseEntity outcome
      */
     @CrossOrigin(methods = {RequestMethod.POST})
     @RequestMapping(value = "/validate", method = RequestMethod.POST, consumes = "application/json")
-    public ResponseEntity<String> validate(@RequestHeader("token") String token) {
-        if (authService.isTokenValid(token)) {
+    public ResponseEntity<String> validate(@RequestHeader("token") String token, @RequestBody int userID) {
+        if (authService.isTokenValid(token, userID)) {
             return new ResponseEntity<>("Token is valid", HttpStatus.OK);
         } else {
             return new ResponseEntity<>("Token is invalid", HttpStatus.UNAUTHORIZED);
