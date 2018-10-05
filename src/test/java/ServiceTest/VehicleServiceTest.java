@@ -39,7 +39,8 @@ public class VehicleServiceTest {
     public void setUp() {
         signedInUser = new User(1, "email@domain.com", "First", "Last");
         loginToken = "Token";
-        when(authService.getUserByToken(loginToken)).thenReturn(signedInUser);
+        // Treat as a valid token by default
+        when(authService.isTokenValid(loginToken, signedInUser.getId())).thenReturn(true);
     }
 
     @Test
@@ -101,8 +102,9 @@ public class VehicleServiceTest {
 
     @Test
     public void testGettingExistingVehicleUnauthorised() {
+        when(authService.isTokenValid(loginToken, signedInUser.getId())).thenReturn(false);
         try {
-            vehicleService.getVehicleInfo("ABC123", signedInUser.getId(), "Some token");
+            vehicleService.getVehicleInfo("ABC123", signedInUser.getId(), loginToken);
             Assert.fail();
         } catch (UnauthorizedException ignored) {
         }

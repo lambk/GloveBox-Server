@@ -20,6 +20,35 @@ public class UserAccess implements IUserAccess {
     }
 
     /**
+     * Fetches the user from the database with the given id.
+     * Returns a user object with the id, email, firstname, and lastname. All other fields are null
+     * If no user has the given id, null is returned
+     *
+     * @param id The id to use to find the user
+     * @return The matching user if found, else null
+     */
+    @Override
+    public User getUserByID(int id) {
+        try (Connection connection = factory.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement("{CALL get_user_by_id(?)}");
+            statement.setInt(1, id);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return new User(resultSet.getInt("id"),
+                        resultSet.getString("email"),
+                        resultSet.getString("firstName"),
+                        resultSet.getString("lastName"),
+                        null,
+                        null);
+            }
+            return null;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
      * Fetches the user from the database with the given email.
      * Returns a user object with the id, email, firstname, and lastname. All other fields are null
      * If no user has the given email, null is returned
@@ -28,9 +57,9 @@ public class UserAccess implements IUserAccess {
      * @return The matching user if found, else null
      */
     @Override
-    public User getUser(String email) {
+    public User getUserByEmail(String email) {
         try (Connection connection = factory.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("{CALL get_user(?)}");
+            PreparedStatement statement = connection.prepareStatement("{CALL get_user_by_email(?)}");
             statement.setString(1, email);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
@@ -59,7 +88,7 @@ public class UserAccess implements IUserAccess {
     @Override
     public User getUserByToken(String token) {
         try (Connection connection = factory.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("{CALL get_user_with_token(?)}");
+            PreparedStatement statement = connection.prepareStatement("{CALL get_user_by_token(?)}");
             statement.setString(1, token);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {

@@ -6,7 +6,9 @@ import java.sql.SQLException;
 
 public interface IUserAccess {
 
-    User getUser(String email);
+    User getUserByID(int id);
+
+    User getUserByEmail(String email);
 
     User getUserByToken(String token);
 

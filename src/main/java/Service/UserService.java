@@ -36,7 +36,7 @@ public class UserService implements IUserService {
      */
     @Override
     public void createUser(RegistrationDTO registrationDTO) throws IllegalArgumentException, InternalServerErrorException {
-        if (userAccess.getUser(registrationDTO.getEmail()) != null) {
+        if (userAccess.getUserByEmail(registrationDTO.getEmail()) != null) {
             throw new IllegalArgumentException("Account already exists");
         }
         String salt = DigestUtils.sha256Hex(UUID.randomUUID().toString());
@@ -49,5 +49,10 @@ public class UserService implements IUserService {
         } catch (SQLException e) {
             throw new InternalServerErrorException("Account could not be created");
         }
+    }
+
+    @Override
+    public User getUserByID(int id) {
+        return userAccess.getUserByID(id);
     }
 }
