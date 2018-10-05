@@ -31,22 +31,23 @@ public class VehicleService implements IVehicleService {
     /**
      * Attempts to register a new vehicle using the vehicle registration details given.
      * Before inserting the new vehicle, the following occurs:
-     * - The user with matching token is fetched to make sure there is an existing login for that token
+     * - The user with matching token is fetched, and their user id is compared to the id provided
      * - There is a check to make sure a vehicle with the same plate and owner doesn't already exist
      * If the above pass, the access layer is called to add the new vehicle, and it is tied to the user account returned
      * by the token check
      *
      * @param vehicleRegistrationDTO The vehicle registration details
-     * @param token                  The token used to tie the registration to a logged in user
+     * @param ownerId                The users id to register as owner
+     * @param token                  The token used to authenticate the provided user id
      * @throws UnauthorizedException        If the token is not valid
      * @throws IllegalArgumentException     If the matched user already has a vehicle with the given plate
      * @throws InternalServerErrorException If there is an error with the sql operation when adding the vehicle
      */
     @Override
-    public void registerVehicle(VehicleRegistrationDTO vehicleRegistrationDTO, String token) throws UnauthorizedException, IllegalArgumentException, InternalServerErrorException {
+    public void registerVehicle(VehicleRegistrationDTO vehicleRegistrationDTO, int ownerId, String token) throws UnauthorizedException, IllegalArgumentException, InternalServerErrorException {
         User user = authService.getUserByToken(token);
-        if (user == null) {
-            throw new UnauthorizedException("The given token is not valid");
+        if (user == null || user.getId() != ownerId) {
+            throw new UnauthorizedException("Token does not match given userId");
         }
         if (getVehicleInfo(vehicleRegistrationDTO.getPlate(), user.getId()) != null) {
             throw new IllegalArgumentException("This user already registered a vehicle with the same plate");
@@ -65,10 +66,27 @@ public class VehicleService implements IVehicleService {
      *
      * @param plate   The plate of the vehicle
      * @param ownerId The id of the user account that is linked to the vehicle
+     * @param token   The clients login token
      * @return The matched vehicle object (null if there is no match)
      */
     @Override
-    public Vehicle getVehicleInfo(String plate, int ownerId) {
+    public Vehicle getVehicleInfo(String plate, int ownerId, String token) throws UnauthorizedException {
+        User user = authService.getUserByToken(token);
+        if (user == null || user.getId() != ownerId) {
+            throw new UnauthorizedException("Token does not match given userId");
+        }
+        return getVehicleInfo(plate, ownerId);
+    }
+
+    /**
+     * Fetches the vehicle info of a vehicle with the given plate and owner id
+     * Doesn't require authentication (for other service methods that have already authenticated the user
+     *
+     * @param plate   The plate of the vehicle
+     * @param ownerId The id of the user account that is linked to the vehicle
+     * @return The matched vehicle object (null if there is no match)
+     */
+    private Vehicle getVehicleInfo(String plate, int ownerId) {
         return vehicleAccess.getVehicle(plate, ownerId);
     }
 
