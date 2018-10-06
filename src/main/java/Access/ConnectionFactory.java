@@ -17,9 +17,6 @@ class ConnectionFactory {
 
     @PostConstruct
     public void init() {
-        if (url == null || url.equals("")) {
-            url = System.getenv("JAWSDB_URL");
-        }
         dataSource = new ComboPooledDataSource();
         try {
             dataSource.setDriverClass("com.mysql.jdbc.Driver");
