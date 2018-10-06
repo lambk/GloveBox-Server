@@ -25,7 +25,6 @@ public class AuthServiceTest {
     @InjectMocks
     private AuthService authService;
 
-
     private User authenticationDetails;
 
     @Before
@@ -69,6 +68,42 @@ public class AuthServiceTest {
             Assert.fail();
         } catch (UnauthorizedException ignored) {
         }
+    }
+
+    @Test
+    public void testTokenCheck() {
+        String loginToken = "token";
+        int id = 1;
+        when(userAccess.getUserByToken(loginToken)).thenReturn(getUserTokenMock(id));
+        Assert.assertTrue(authService.isTokenValid(loginToken, id));
+    }
+
+    @Test
+    public void testTokenCheckIDMismatch() {
+        String loginToken = "token";
+        int id = 1;
+        when(userAccess.getUserByToken(loginToken)).thenReturn(getUserTokenMock(id + 1));
+        Assert.assertFalse(authService.isTokenValid(loginToken, id));
+    }
+
+    @Test
+    public void testTokenCheckTokenMismatch() {
+        String loginToken = "token";
+        int id = 1;
+        when(userAccess.getUserByToken(loginToken)).thenReturn(null);
+        Assert.assertFalse(authService.isTokenValid(loginToken, id));
+    }
+
+    /**
+     * Generates a user object to return from the mocked method
+     *
+     * @param id The generated user's id
+     * @return The generates user object
+     */
+    private User getUserTokenMock(int id) {
+        User user = new User();
+        user.setId(id);
+        return user;
     }
 
 }
