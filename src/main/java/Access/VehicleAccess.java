@@ -82,21 +82,22 @@ public class VehicleAccess implements IVehicleAccess {
      */
     @Override
     public void insertVehicle(Vehicle vehicle, int userID) throws SQLException {
-        Connection connection = factory.getConnection();
-        PreparedStatement statement = connection.prepareStatement("{CALL insert_vehicle(?,?,?,?,?,?,?,?)}");
-        statement.setInt(1, userID);
-        statement.setString(2, vehicle.getPlate().toUpperCase());
-        statement.setString(3, vehicle.getMake());
-        statement.setString(4, vehicle.getModel());
-        statement.setInt(5, vehicle.getYear());
-        statement.setInt(6, vehicle.getOdometer());
-        if (vehicle.getWofExpiry() != null) {
-            statement.setDate(7, Date.valueOf(vehicle.getWofExpiry()));
-        } else {
-            statement.setDate(7, null);
+        try (Connection connection = factory.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement("{CALL insert_vehicle(?,?,?,?,?,?,?,?)}");
+            statement.setInt(1, userID);
+            statement.setString(2, vehicle.getPlate().toUpperCase());
+            statement.setString(3, vehicle.getMake());
+            statement.setString(4, vehicle.getModel());
+            statement.setInt(5, vehicle.getYear());
+            statement.setInt(6, vehicle.getOdometer());
+            if (vehicle.getWofExpiry() != null) {
+                statement.setDate(7, Date.valueOf(vehicle.getWofExpiry()));
+            } else {
+                statement.setDate(7, null);
+            }
+            statement.setString(8, vehicle.getCountryRegistered());
+            statement.executeUpdate();
         }
-        statement.setString(8, vehicle.getCountryRegistered());
-        statement.executeUpdate();
     }
 
     @Override

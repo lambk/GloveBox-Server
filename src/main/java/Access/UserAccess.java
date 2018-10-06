@@ -143,11 +143,12 @@ public class UserAccess implements IUserAccess {
      */
     @Override
     public void insertToken(String email, String token) throws SQLException {
-        Connection connection = factory.getConnection();
-        PreparedStatement statement = connection.prepareStatement("{CALL add_token(?, ?)}");
-        statement.setString(1, email);
-        statement.setString(2, token);
-        statement.executeUpdate();
+        try (Connection connection = factory.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement("{CALL add_token(?, ?)}");
+            statement.setString(1, email);
+            statement.setString(2, token);
+            statement.executeUpdate();
+        }
     }
 
     /**
@@ -177,13 +178,14 @@ public class UserAccess implements IUserAccess {
      */
     @Override
     public void insertUser(User user) throws SQLException {
-        Connection connection = factory.getConnection();
-        PreparedStatement statement = connection.prepareStatement("{CALL insert_user(?, ?, ?, ?, ?)}");
-        statement.setString(1, user.getEmail());
-        statement.setString(2, user.getFirstName());
-        statement.setString(3, user.getLastName());
-        statement.setString(4, user.getSalt());
-        statement.setString(5, user.getPassword());
-        statement.executeUpdate();
+        try (Connection connection = factory.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement("{CALL insert_user(?, ?, ?, ?, ?)}");
+            statement.setString(1, user.getEmail());
+            statement.setString(2, user.getFirstName());
+            statement.setString(3, user.getLastName());
+            statement.setString(4, user.getSalt());
+            statement.setString(5, user.getPassword());
+            statement.executeUpdate();
+        }
     }
 }
