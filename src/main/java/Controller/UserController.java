@@ -21,6 +21,13 @@ public class UserController {
         this.userService = userService;
     }
 
+    @CrossOrigin(methods = {RequestMethod.GET})
+    @RequestMapping(value = "/test", method = RequestMethod.GET)
+    public ResponseEntity<String> test() {
+        userService.test();
+        return new ResponseEntity<>("k lol", HttpStatus.OK);
+    }
+
     /**
      * Calls the service layer to attempt to create the given user.
      *

@@ -1,6 +1,8 @@
 package Access;
 
 import Model.User;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -8,15 +10,31 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 @Component
 public class UserAccess implements IUserAccess {
 
     private final ConnectionFactory factory;
+    private final SessionFactory sessionFactory;
 
     @Autowired
-    public UserAccess(ConnectionFactory factory) {
+    public UserAccess(ConnectionFactory factory, SessionFactory sessionFactory) {
         this.factory = factory;
+        this.sessionFactory = sessionFactory;
+    }
+
+    @Override
+    public void test() {
+        Session session = this.sessionFactory.openSession();
+        List<User> users = session.createQuery("from User", User.class).list();
+        session.close();
+        for (User user : users) {
+            System.out.println("-----");
+            System.out.println(user.getCreated());
+            System.out.println(user.getPassword());
+            System.out.println(user.getToken());
+        }
     }
 
     /**

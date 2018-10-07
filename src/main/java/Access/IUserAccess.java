@@ -6,6 +6,8 @@ import java.sql.SQLException;
 
 public interface IUserAccess {
 
+    void test();
+
     User getUserByID(int id);
 
     User getUserByEmail(String email);

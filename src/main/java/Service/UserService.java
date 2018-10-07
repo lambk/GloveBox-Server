@@ -25,6 +25,11 @@ public class UserService implements IUserService {
         registrationMapper = new RegistrationMapper();
     }
 
+    @Override
+    public void test() {
+        userAccess.test();
+    }
+
     /**
      * Attempts to add a new user to the database.
      * Before insert, the following actions are taken:
