@@ -50,7 +50,7 @@ public class AuthService implements IAuthService {
             String token = (DigestUtils.sha256Hex(UUID.randomUUID().toString()));
             try {
                 userAccess.insertToken(loginDTO.getEmail(), token);
-                return new TokenDTO(loginDTO.getEmail(), token);
+                return new TokenDTO(authentication.getId(), token);
             } catch (SQLException e) {
                 throw new InternalServerErrorException("There was an error saving the login token");
             }

@@ -2,16 +2,16 @@ package Transfer;
 
 @SuppressWarnings("unused")
 public class TokenDTO {
-    private String email;
+    private int id;
     private String token;
 
-    public TokenDTO(String email, String token) {
-        this.email = email;
+    public TokenDTO(int id, String token) {
+        this.id = id;
         this.token = token;
     }
 
-    public String getEmail() {
-        return email;
+    public int getID() {
+        return id;
     }
 
     public String getToken() {

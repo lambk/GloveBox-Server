@@ -106,7 +106,7 @@ public class UserAccess implements IUserAccess {
 
     /**
      * Fetches the user from the database with the given email.
-     * Returns a user object with only the salt and password field set. All other fields are null.
+     * Returns a user object with only the id, salt and password field set. All other fields are null.
      * If no user has the given email, null is returned
      * <p>
      * The returned user object is used for verifying an attempted login
@@ -122,6 +122,7 @@ public class UserAccess implements IUserAccess {
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 User user = new User();
+                user.setId(resultSet.getInt("id"));
                 user.setSalt(resultSet.getString("salt"));
                 user.setPassword(resultSet.getString("password"));
                 return user;
