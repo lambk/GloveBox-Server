@@ -4,7 +4,6 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.beans.PropertyVetoException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -15,7 +14,6 @@ class ConnectionFactory {
     private String url;
     private ComboPooledDataSource dataSource;
 
-    @PostConstruct
     public void init() {
         dataSource = new ComboPooledDataSource();
         try {

@@ -8,7 +8,7 @@ import Utility.Exceptions.UnauthorizedException;
 public interface IAuthService {
     TokenDTO login(LoginDTO loginDTO) throws UnauthorizedException, InternalServerErrorException;
 
-    void logout(String token);
+    void logout(String token, int userID);
 
     boolean isTokenValid(String token, int userID);
 }

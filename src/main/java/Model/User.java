@@ -2,6 +2,8 @@ package Model;
 
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Table;
 import java.time.LocalDate;
 
@@ -9,6 +11,7 @@ import java.time.LocalDate;
 @Table(name = "Users")
 public class User {
     @javax.persistence.Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String email;
     private String firstName;
@@ -28,7 +31,7 @@ public class User {
         this.lastName = lastName;
     }
 
-    public User(int id, String email, String firstName, String lastName, String salt, String password) {
+    public User(Integer id, String email, String firstName, String lastName, String salt, String password) {
         this.id = id;
         this.email = email;
         this.firstName = firstName;
