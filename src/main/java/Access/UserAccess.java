@@ -14,12 +14,10 @@ import java.util.List;
 @Component
 public class UserAccess implements IUserAccess {
 
-    private final ConnectionFactory factory;
     private final SessionFactory sessionFactory;
 
     @Autowired
-    public UserAccess(ConnectionFactory factory, SessionFactory sessionFactory) {
-        this.factory = factory;
+    public UserAccess(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
 
