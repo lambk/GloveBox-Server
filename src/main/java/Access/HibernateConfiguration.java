@@ -1,45 +1,39 @@
 package Access;
 
-import com.mchange.v2.c3p0.ComboPooledDataSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import javax.sql.DataSource;
-import java.beans.PropertyVetoException;
-import java.sql.SQLException;
+import java.util.Properties;
 
 @Configuration
 @EnableTransactionManagement
 public class HibernateConfiguration {
 
     @Value("${DB_URL}")
-    private String url;
+    private String db_url;
+    @Value("${DB_Username}")
+    private String db_username;
+    @Value("${DB_Password}")
+    private String db_password;
 
     @Bean
     public LocalSessionFactoryBean sessionFactory() {
-        LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
-        sessionFactory.setDataSource(dataSource());
-        sessionFactory.setPackagesToScan("Model");
-        return sessionFactory;
-    }
+        LocalSessionFactoryBean sessionFactoryBean = new LocalSessionFactoryBean();
+        sessionFactoryBean.setConfigLocation(new ClassPathResource("hibernate.cfg.xml"));
+        sessionFactoryBean.setPackagesToScan("Model");
+        Properties properties = new Properties();
+        properties.setProperty("hibernate.connection.url", db_url);
+        properties.setProperty("hibernate.connection.username", db_username);
+        properties.setProperty("hibernate.connection.password", db_password);
+        sessionFactoryBean.setHibernateProperties(properties);
 
-    @Bean
-    public DataSource dataSource() {
-        ComboPooledDataSource dataSource = new ComboPooledDataSource();
-        try {
-            dataSource.setDriverClass("com.mysql.jdbc.Driver");
-            dataSource.setJdbcUrl(url);
-            dataSource.getConnection();
-        } catch (PropertyVetoException | SQLException e) {
-            e.printStackTrace();
-        }
-
-        return dataSource;
+        return sessionFactoryBean;
     }
 
     @Bean
