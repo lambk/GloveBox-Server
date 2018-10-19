@@ -2,16 +2,15 @@ package Service;
 
 import Model.Vehicle;
 import Transfer.VehicleRegistrationDTO;
-import Utility.Exceptions.InternalServerErrorException;
 import Utility.Exceptions.UnauthorizedException;
 
 import java.util.Set;
 
 public interface IVehicleService {
 
-    void registerVehicle(VehicleRegistrationDTO vehicleRegistrationDTO, int ownerId, String token) throws UnauthorizedException, IllegalArgumentException, InternalServerErrorException;
+    void registerVehicle(VehicleRegistrationDTO vehicleRegistrationDTO, int userID, String token) throws UnauthorizedException, IllegalArgumentException;
 
-    Vehicle getVehicleInfo(String plate, int ownerId, String token) throws UnauthorizedException;
+    Vehicle getVehicleInfo(String plate, int userID, String token) throws UnauthorizedException;
 
-    Set<Vehicle> getUsersVehicles(String email);
+    Set<Vehicle> getUsersVehicles(int userID);
 }

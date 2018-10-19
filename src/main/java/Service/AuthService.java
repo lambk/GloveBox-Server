@@ -4,13 +4,11 @@ import Access.IUserAccess;
 import Model.User;
 import Transfer.LoginDTO;
 import Transfer.TokenDTO;
-import Utility.Exceptions.InternalServerErrorException;
 import Utility.Exceptions.UnauthorizedException;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.SQLException;
 import java.util.UUID;
 
 @Service
@@ -35,25 +33,21 @@ public class AuthService implements IAuthService {
      * @param loginDTO The details for the login attempt
      * @return The email for the account, and the new token
      * @throws UnauthorizedException        If there is no user with the given email, or the authentication failed
-     * @throws InternalServerErrorException If there was an sql error when inserting the new token
      */
     @Override
-    public TokenDTO login(LoginDTO loginDTO) throws UnauthorizedException, InternalServerErrorException {
-        User authentication = userAccess.getUserAuthDetails(loginDTO.getEmail());
-        if (authentication == null) {
+    public TokenDTO login(LoginDTO loginDTO) throws UnauthorizedException {
+        User user = userAccess.getUserByEmail(loginDTO.getEmail());
+        if (user == null) {
             throw new UnauthorizedException("The provided email/password combination is incorrect");
         }
-        String attemptedHash = DigestUtils.sha256Hex(authentication.getSalt() + loginDTO.getPassword());
-        if (!attemptedHash.equals(authentication.getPassword())) {
+        String attemptedHash = DigestUtils.sha256Hex(user.getSalt() + loginDTO.getPassword());
+        if (!attemptedHash.equals(user.getPassword())) {
             throw new UnauthorizedException("The provided email/password combination is incorrect");
         } else {
             String token = (DigestUtils.sha256Hex(UUID.randomUUID().toString()));
-            try {
-                userAccess.insertToken(loginDTO.getEmail(), token);
-                return new TokenDTO(authentication.getId(), token);
-            } catch (SQLException e) {
-                throw new InternalServerErrorException("There was an error saving the login token");
-            }
+            user.setToken(token);
+            userAccess.updateUser(user);
+            return new TokenDTO(user.getId(), token);
         }
     }
 
@@ -63,8 +57,12 @@ public class AuthService implements IAuthService {
      * @param token The token to find the user to remove the token for
      */
     @Override
-    public void logout(String token) {
-        userAccess.deleteToken(token);
+    public void logout(String token, int userID) {
+        User user = userAccess.getUserByID(userID);
+        if (user != null) {
+            user.setToken(null);
+            userAccess.updateUser(user);
+        }
     }
 
     /**
@@ -77,18 +75,9 @@ public class AuthService implements IAuthService {
      */
     @Override
     public boolean isTokenValid(String token, int userID) {
-        User user = getUserByToken(token);
-        return user != null && user.getId() == userID;
-    }
-
-    /**
-     * Fetches the user object that currently contains the given token.
-     *
-     * @param token The token to find the user
-     * @return The matched user if found, else null
-     */
-    private User getUserByToken(String token) {
-        return userAccess.getUserByToken(token);
+        User user = userAccess.getUserByID(userID);
+        if (user == null || user.getToken() == null) return false;
+        return user.getToken().equals(token);
     }
 
 }

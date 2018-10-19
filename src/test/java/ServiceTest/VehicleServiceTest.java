@@ -6,7 +6,6 @@ import Model.Vehicle;
 import Service.IAuthService;
 import Service.VehicleService;
 import Transfer.VehicleRegistrationDTO;
-import Utility.Exceptions.InternalServerErrorException;
 import Utility.Exceptions.UnauthorizedException;
 import org.junit.Assert;
 import org.junit.Before;
@@ -49,7 +48,8 @@ public class VehicleServiceTest {
         VehicleRegistrationDTO vehicleRegistration = new VehicleRegistrationDTO("ABC123", "Toyota", "Corolla", 2000, 10000, LocalDate.now(), "New Zealand");
         try {
             vehicleService.registerVehicle(vehicleRegistration, signedInUser.getId(), loginToken);
-        } catch (UnauthorizedException | InternalServerErrorException e) {
+            Assert.fail();
+        } catch (UnauthorizedException e) {
             Assert.fail();
         } catch (IllegalArgumentException ignored) {
         }
@@ -60,7 +60,7 @@ public class VehicleServiceTest {
         VehicleRegistrationDTO vehicleRegistration1 = new VehicleRegistrationDTO("ABC123", "Toyota", "Corolla", 2000, 10000, LocalDate.now(), "New Zealand");
         try {
             vehicleService.registerVehicle(vehicleRegistration1, signedInUser.getId(), loginToken);
-        } catch (UnauthorizedException | InternalServerErrorException | IllegalArgumentException e) {
+        } catch (UnauthorizedException | IllegalArgumentException e) {
             Assert.fail();
         }
     }
@@ -70,8 +70,6 @@ public class VehicleServiceTest {
         VehicleRegistrationDTO vehicleRegistration1 = new VehicleRegistrationDTO("ABC123", "Toyota", "Corolla", 2000, 10000, LocalDate.now(), "New Zealand");
         try {
             vehicleService.registerVehicle(vehicleRegistration1, signedInUser.getId(), "A different token");
-            Assert.fail();
-        } catch (InternalServerErrorException e) {
             Assert.fail();
         } catch (UnauthorizedException ignored) {
         }

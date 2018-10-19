@@ -4,7 +4,6 @@ import Access.IUserAccess;
 import Model.User;
 import Service.AuthService;
 import Transfer.LoginDTO;
-import Utility.Exceptions.InternalServerErrorException;
 import Utility.Exceptions.UnauthorizedException;
 import org.junit.Assert;
 import org.junit.Before;
@@ -38,10 +37,10 @@ public class AuthServiceTest {
     @Test
     public void testSuccessfulLogin() {
         LoginDTO loginDTO = new LoginDTO("email@domain.com", "password");
-        when(userAccess.getUserAuthDetails(loginDTO.getEmail())).thenReturn(authenticationDetails);
+        when(userAccess.getUserByEmail(loginDTO.getEmail())).thenReturn(authenticationDetails);
         try {
             authService.login(loginDTO);
-        } catch (UnauthorizedException | InternalServerErrorException e) {
+        } catch (UnauthorizedException e) {
             Assert.fail();
         }
     }
@@ -49,11 +48,9 @@ public class AuthServiceTest {
     @Test
     public void testUnsuccessfulLoginDueToPassword() {
         LoginDTO loginDTO = new LoginDTO("email@domain.com", "p4ssw0rd");
-        when(userAccess.getUserAuthDetails(loginDTO.getEmail())).thenReturn(authenticationDetails);
+        when(userAccess.getUserByEmail(loginDTO.getEmail())).thenReturn(authenticationDetails);
         try {
             authService.login(loginDTO);
-            Assert.fail();
-        } catch (InternalServerErrorException e) {
             Assert.fail();
         } catch (UnauthorizedException ignored) {
         }
@@ -65,8 +62,6 @@ public class AuthServiceTest {
         try {
             authService.login(loginDTO);
             Assert.fail();
-        } catch (InternalServerErrorException e) {
-            Assert.fail();
         } catch (UnauthorizedException ignored) {
         }
     }
@@ -75,7 +70,7 @@ public class AuthServiceTest {
     public void testTokenCheck() {
         String loginToken = "token";
         int id = 1;
-        when(userAccess.getUserByToken(loginToken)).thenReturn(getUserTokenMock(id));
+        when(userAccess.getUserByID(id)).thenReturn(getUserTokenMock(loginToken));
         Assert.assertTrue(authService.isTokenValid(loginToken, id));
     }
 
@@ -83,7 +78,7 @@ public class AuthServiceTest {
     public void testTokenCheckIDMismatch() {
         String loginToken = "token";
         int id = 1;
-        when(userAccess.getUserByToken(loginToken)).thenReturn(getUserTokenMock(id + 1));
+        when(userAccess.getUserByID(id)).thenReturn(null);
         Assert.assertFalse(authService.isTokenValid(loginToken, id));
     }
 
@@ -91,19 +86,19 @@ public class AuthServiceTest {
     public void testTokenCheckTokenMismatch() {
         String loginToken = "token";
         int id = 1;
-        when(userAccess.getUserByToken(loginToken)).thenReturn(null);
+        when(userAccess.getUserByID(id)).thenReturn(getUserTokenMock("anothertoken"));
         Assert.assertFalse(authService.isTokenValid(loginToken, id));
     }
 
     /**
      * Generates a user object to return from the mocked method
      *
-     * @param id The generated user's id
+     * @param token The generated user's token
      * @return The generates user object
      */
-    private User getUserTokenMock(int id) {
+    private User getUserTokenMock(String token) {
         User user = new User();
-        user.setId(id);
+        user.setToken(token);
         return user;
     }
 

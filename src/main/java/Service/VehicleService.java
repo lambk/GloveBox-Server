@@ -5,12 +5,10 @@ import Mappers.IMapper;
 import Mappers.VehicleMapper;
 import Model.Vehicle;
 import Transfer.VehicleRegistrationDTO;
-import Utility.Exceptions.InternalServerErrorException;
 import Utility.Exceptions.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.SQLException;
 import java.util.Set;
 
 @Service
@@ -21,7 +19,7 @@ public class VehicleService implements IVehicleService {
     private final IMapper<VehicleRegistrationDTO, Vehicle> vehicleMapper;
 
     @Autowired
-    public VehicleService(IVehicleAccess vehicleAccess, IUserService userService, IAuthService authService) {
+    public VehicleService(IVehicleAccess vehicleAccess, IAuthService authService) {
         this.vehicleAccess = vehicleAccess;
         this.authService = authService;
         vehicleMapper = new VehicleMapper();
@@ -40,10 +38,9 @@ public class VehicleService implements IVehicleService {
      * @param token                  The token used to authenticate the provided user id
      * @throws UnauthorizedException        If the token is not valid
      * @throws IllegalArgumentException     If the matched user already has a vehicle with the given plate
-     * @throws InternalServerErrorException If there is an error with the sql operation when adding the vehicle
      */
     @Override
-    public void registerVehicle(VehicleRegistrationDTO vehicleRegistrationDTO, int userID, String token) throws UnauthorizedException, IllegalArgumentException, InternalServerErrorException {
+    public void registerVehicle(VehicleRegistrationDTO vehicleRegistrationDTO, int userID, String token) throws UnauthorizedException, IllegalArgumentException {
         if (!authService.isTokenValid(token, userID)) {
             throw new UnauthorizedException("Token does not match given userID");
         }
@@ -51,12 +48,7 @@ public class VehicleService implements IVehicleService {
             throw new IllegalArgumentException("This user already registered a vehicle with the same plate");
         }
         Vehicle vehicle = vehicleMapper.map(vehicleRegistrationDTO);
-        try {
-            vehicleAccess.insertVehicle(vehicle, userID);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new InternalServerErrorException("The vehicle could not be inserted");
-        }
+        vehicleAccess.insertVehicle(vehicle, userID);
     }
 
     /**
@@ -88,13 +80,13 @@ public class VehicleService implements IVehicleService {
     }
 
     /**
-     * Fetches a set of vehicles that are linked the user with the given email
+     * Fetches a set of vehicles that are linked the user with the given id
      *
-     * @param email The email of the account to filter vehicles by
-     * @return The set of vehicles
+     * @param userID The id of the user
+     * @return The set with the user's vehicles
      */
     @Override
-    public Set<Vehicle> getUsersVehicles(String email) {
-        return vehicleAccess.getVehiclesByEmail(email);
+    public Set<Vehicle> getUsersVehicles(int userID) {
+        return vehicleAccess.getVehiclesByID(userID);
     }
 }
