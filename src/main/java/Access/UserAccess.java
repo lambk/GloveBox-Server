@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import java.util.List;
+import javax.persistence.criteria.Root;
 
 @Component
 public class UserAccess implements IUserAccess {
@@ -19,10 +19,6 @@ public class UserAccess implements IUserAccess {
     @Autowired
     public UserAccess(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
-    }
-
-    @Override
-    public void test() {
     }
 
     /**
@@ -51,10 +47,9 @@ public class UserAccess implements IUserAccess {
         try (Session session = sessionFactory.openSession()) {
             CriteriaBuilder builder = session.getCriteriaBuilder();
             CriteriaQuery<User> cQuery = builder.createQuery(User.class);
-            cQuery.where(builder.equal(cQuery.from(User.class).get("email"), email));
-            List<User> users = session.createQuery(cQuery).list();
-            if (users.size() == 0) return null;
-            return users.get(0);
+            Root<User> users = cQuery.from(User.class);
+            cQuery.select(users).where(builder.equal(users.get("email"), email));
+            return session.createQuery(cQuery).uniqueResult();
         }
     }
 

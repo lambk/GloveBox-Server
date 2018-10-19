@@ -1,16 +1,13 @@
 package Model;
 
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "Users")
 public class User {
-    @javax.persistence.Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String email;
@@ -102,5 +99,19 @@ public class User {
 
     public void setCreated(LocalDate created) {
         this.created = created;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof User) {
+            return ((User) o).getId() == this.id;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        String userString = "user" + this.id;
+        return userString.hashCode();
     }
 }

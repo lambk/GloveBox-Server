@@ -76,7 +76,8 @@ public class AuthService implements IAuthService {
     @Override
     public boolean isTokenValid(String token, int userID) {
         User user = userAccess.getUserByID(userID);
-        return user != null && user.getToken().equals(token);
+        if (user == null || user.getToken() == null) return false;
+        return user.getToken().equals(token);
     }
 
 }

@@ -4,7 +4,6 @@ import Access.IUserAccess;
 import Model.User;
 import Service.UserService;
 import Transfer.RegistrationDTO;
-import Utility.Exceptions.InternalServerErrorException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,7 +28,7 @@ public class UserServiceTest {
         when(userAccess.getUserByEmail(registrationDTO.getEmail())).thenReturn(null);
         try {
             userService.createUser(registrationDTO);
-        } catch (InternalServerErrorException | IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             Assert.fail();
         }
     }
@@ -40,7 +39,6 @@ public class UserServiceTest {
         when(userAccess.getUserByEmail(registration.getEmail())).thenReturn(new User());
         try {
             userService.createUser(registration);
-        } catch (InternalServerErrorException e) {
             Assert.fail();
         } catch (IllegalArgumentException ignored) {
         }

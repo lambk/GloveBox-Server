@@ -3,7 +3,6 @@ package Controller;
 import Model.Vehicle;
 import Service.IVehicleService;
 import Transfer.VehicleRegistrationDTO;
-import Utility.Exceptions.InternalServerErrorException;
 import Utility.Exceptions.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -35,8 +34,6 @@ public class VehicleController {
         try {
             vehicleService.registerVehicle(vehicleInfo, userID, token);
             return new ResponseEntity<>("Vehicle registered successfully", HttpStatus.CREATED);
-        } catch (InternalServerErrorException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (UnauthorizedException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         } catch (IllegalArgumentException e) {

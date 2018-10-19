@@ -4,8 +4,6 @@ import Model.User;
 
 public interface IUserAccess {
 
-    void test();
-
     User getUserByID(int id);
 
     User getUserByEmail(String email);

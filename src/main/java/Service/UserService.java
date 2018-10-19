@@ -5,7 +5,6 @@ import Mappers.IMapper;
 import Mappers.RegistrationMapper;
 import Model.User;
 import Transfer.RegistrationDTO;
-import Utility.Exceptions.InternalServerErrorException;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,11 +23,6 @@ public class UserService implements IUserService {
         registrationMapper = new RegistrationMapper();
     }
 
-    @Override
-    public void test() {
-        userAccess.test();
-    }
-
     /**
      * Attempts to add a new user to the database.
      * Before insert, the following actions are taken:
@@ -39,7 +33,7 @@ public class UserService implements IUserService {
      * @param registrationDTO The registration details
      */
     @Override
-    public void createUser(RegistrationDTO registrationDTO) throws IllegalArgumentException, InternalServerErrorException {
+    public void createUser(RegistrationDTO registrationDTO) throws IllegalArgumentException {
         if (userAccess.getUserByEmail(registrationDTO.getEmail()) != null) {
             throw new IllegalArgumentException("Account already exists");
         }
