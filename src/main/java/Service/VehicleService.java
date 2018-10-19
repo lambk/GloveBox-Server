@@ -80,14 +80,13 @@ public class VehicleService implements IVehicleService {
     }
 
     /**
-     * Fetches a set of vehicles that are linked the user with the given email
+     * Fetches a set of vehicles that are linked the user with the given id
      *
-     * @param email The email of the account to filter vehicles by
-     * @return The set of vehicles
+     * @param userID The id of the user
+     * @return The set with the user's vehicles
      */
     @Override
-    public Set<Vehicle> getUsersVehicles(String email) {
-        //return vehicleAccess.getVehiclesByEmail(email);
-        return null;
+    public Set<Vehicle> getUsersVehicles(int userID) {
+        return vehicleAccess.getVehiclesByID(userID);
     }
 }
