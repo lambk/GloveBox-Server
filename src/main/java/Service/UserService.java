@@ -5,12 +5,10 @@ import Mappers.IMapper;
 import Mappers.RegistrationMapper;
 import Model.User;
 import Transfer.RegistrationDTO;
-import Utility.Exceptions.InternalServerErrorException;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.SQLException;
 import java.util.UUID;
 
 @Service
@@ -35,7 +33,7 @@ public class UserService implements IUserService {
      * @param registrationDTO The registration details
      */
     @Override
-    public void createUser(RegistrationDTO registrationDTO) throws IllegalArgumentException, InternalServerErrorException {
+    public void createUser(RegistrationDTO registrationDTO) throws IllegalArgumentException {
         if (userAccess.getUserByEmail(registrationDTO.getEmail()) != null) {
             throw new IllegalArgumentException("Account already exists");
         }
@@ -44,11 +42,7 @@ public class UserService implements IUserService {
         User user = registrationMapper.map(registrationDTO);
         user.setSalt(salt);
         user.setPassword(hashedPassword);
-        try {
-            userAccess.insertUser(user);
-        } catch (SQLException e) {
-            throw new InternalServerErrorException("Account could not be created");
-        }
+        userAccess.saveUser(user);
     }
 
     @Override

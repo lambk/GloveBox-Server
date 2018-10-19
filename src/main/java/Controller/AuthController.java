@@ -49,8 +49,8 @@ public class AuthController {
      */
     @CrossOrigin(methods = {RequestMethod.POST})
     @RequestMapping(value = "/logout", method = RequestMethod.POST, consumes = "application/json")
-    public ResponseEntity<String> logout(@RequestHeader("token") String token) {
-        authService.logout(token);
+    public ResponseEntity<String> logout(@RequestHeader("token") String token, @RequestBody int userID) {
+        authService.logout(token, userID);
         return new ResponseEntity<>("Successfully logged out", HttpStatus.OK);
     }
 
