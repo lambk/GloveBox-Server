@@ -1,10 +1,7 @@
 package Service;
 
 import Access.IUserAccess;
-import Mappers.IMapper;
-import Mappers.RegistrationMapper;
 import Model.User;
-import Transfer.RegistrationDTO;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,12 +12,10 @@ import java.util.UUID;
 public class UserService implements IUserService {
 
     private final IUserAccess userAccess;
-    private final IMapper<RegistrationDTO, User> registrationMapper;
 
     @Autowired
     public UserService(IUserAccess userAccess) {
         this.userAccess = userAccess;
-        registrationMapper = new RegistrationMapper();
     }
 
     /**
@@ -30,16 +25,15 @@ public class UserService implements IUserService {
      * - A random salt is generated and used to hash the password given in the Registration DTO
      * - The new User object is sent to the access layer to be inserted
      *
-     * @param registrationDTO The registration details
+     * @param user The new user
      */
     @Override
-    public void createUser(RegistrationDTO registrationDTO) throws IllegalArgumentException {
-        if (userAccess.getUserByEmail(registrationDTO.getEmail()) != null) {
+    public void createUser(User user) throws IllegalArgumentException {
+        if (userAccess.getUserByEmail(user.getEmail()) != null) {
             throw new IllegalArgumentException("Account already exists");
         }
         String salt = DigestUtils.sha256Hex(UUID.randomUUID().toString());
-        String hashedPassword = DigestUtils.sha256Hex(salt + registrationDTO.getPassword());
-        User user = registrationMapper.map(registrationDTO);
+        String hashedPassword = DigestUtils.sha256Hex(salt + user.getPassword());
         user.setSalt(salt);
         user.setPassword(hashedPassword);
         userAccess.saveUser(user);

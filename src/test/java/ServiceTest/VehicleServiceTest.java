@@ -5,7 +5,6 @@ import Model.User;
 import Model.Vehicle;
 import Service.IAuthService;
 import Service.VehicleService;
-import Transfer.VehicleRegistrationDTO;
 import Utility.Exceptions.UnauthorizedException;
 import org.junit.Assert;
 import org.junit.Before;
@@ -36,7 +35,7 @@ public class VehicleServiceTest {
 
     @Before
     public void setUp() {
-        signedInUser = new User(1, "email@domain.com", "First", "Last");
+        signedInUser = new User(1, "email@domain.com", "First", "Last", null, null);
         loginToken = "Token";
         // Treat as a valid token by default
         when(authService.isTokenValid(loginToken, signedInUser.getId())).thenReturn(true);
@@ -45,7 +44,7 @@ public class VehicleServiceTest {
     @Test
     public void testDuplicateVehicleRegistration() {
         when(vehicleAccess.getVehicle("ABC123", signedInUser.getId())).thenReturn(new Vehicle());
-        VehicleRegistrationDTO vehicleRegistration = new VehicleRegistrationDTO("ABC123", "Toyota", "Corolla", 2000, 10000, LocalDate.now(), "New Zealand");
+        Vehicle vehicleRegistration = new Vehicle("ABC123", "Toyota", "Corolla", 2000, 10000, LocalDate.now(), "New Zealand");
         try {
             vehicleService.registerVehicle(vehicleRegistration, signedInUser.getId(), loginToken);
             Assert.fail();
@@ -57,7 +56,7 @@ public class VehicleServiceTest {
 
     @Test
     public void testSuccessfulVehicleRegistration() {
-        VehicleRegistrationDTO vehicleRegistration1 = new VehicleRegistrationDTO("ABC123", "Toyota", "Corolla", 2000, 10000, LocalDate.now(), "New Zealand");
+        Vehicle vehicleRegistration1 = new Vehicle("ABC123", "Toyota", "Corolla", 2000, 10000, LocalDate.now(), "New Zealand");
         try {
             vehicleService.registerVehicle(vehicleRegistration1, signedInUser.getId(), loginToken);
         } catch (UnauthorizedException | IllegalArgumentException e) {
@@ -67,7 +66,7 @@ public class VehicleServiceTest {
 
     @Test
     public void testVehicleRegistrationWhenLoggedOut() {
-        VehicleRegistrationDTO vehicleRegistration1 = new VehicleRegistrationDTO("ABC123", "Toyota", "Corolla", 2000, 10000, LocalDate.now(), "New Zealand");
+        Vehicle vehicleRegistration1 = new Vehicle("ABC123", "Toyota", "Corolla", 2000, 10000, LocalDate.now(), "New Zealand");
         try {
             vehicleService.registerVehicle(vehicleRegistration1, signedInUser.getId(), "A different token");
             Assert.fail();

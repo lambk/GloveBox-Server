@@ -3,7 +3,6 @@ package ServiceTest;
 import Access.IUserAccess;
 import Model.User;
 import Service.UserService;
-import Transfer.RegistrationDTO;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,10 +23,10 @@ public class UserServiceTest {
 
     @Test
     public void testValidUserRegistration() {
-        RegistrationDTO registrationDTO = new RegistrationDTO("email@domain.com", "firstname", "lastname", "password");
-        when(userAccess.getUserByEmail(registrationDTO.getEmail())).thenReturn(null);
+        User user = new User(null, "email@domain.com", "firstname", "lastname", null, "password");
+        when(userAccess.getUserByEmail(user.getEmail())).thenReturn(null);
         try {
-            userService.createUser(registrationDTO);
+            userService.createUser(user);
         } catch (IllegalArgumentException e) {
             Assert.fail();
         }
@@ -35,10 +34,10 @@ public class UserServiceTest {
 
     @Test
     public void testDuplicateUserRegistration() {
-        RegistrationDTO registration = new RegistrationDTO("email@domain.com", "firstname", "lastname", "password");
-        when(userAccess.getUserByEmail(registration.getEmail())).thenReturn(new User());
+        User user = new User(null, "email@domain.com", "firstname", "lastname", null, "password");
+        when(userAccess.getUserByEmail(user.getEmail())).thenReturn(new User());
         try {
-            userService.createUser(registration);
+            userService.createUser(user);
             Assert.fail();
         } catch (IllegalArgumentException ignored) {
         }

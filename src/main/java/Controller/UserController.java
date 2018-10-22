@@ -1,5 +1,8 @@
 package Controller;
 
+import Mappers.IMapper;
+import Mappers.RegistrationMapper;
+import Model.User;
 import Service.IUserService;
 import Transfer.RegistrationDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +17,12 @@ import javax.validation.Valid;
 public class UserController {
 
     private final IUserService userService;
+    private final IMapper<RegistrationDTO, User> registrationDTOUserMapper;
 
     @Autowired
     public UserController(IUserService userService) {
         this.userService = userService;
+        this.registrationDTOUserMapper = new RegistrationMapper();
     }
 
     /**
@@ -30,7 +35,8 @@ public class UserController {
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = "application/json")
     public ResponseEntity<String> register(@Valid @RequestBody RegistrationDTO userInfo) {
         try {
-            userService.createUser(userInfo);
+            User user = registrationDTOUserMapper.map(userInfo);
+            userService.createUser(user);
             return new ResponseEntity<>("Account successfully created", HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);

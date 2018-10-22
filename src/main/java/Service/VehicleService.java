@@ -1,10 +1,7 @@
 package Service;
 
 import Access.IVehicleAccess;
-import Mappers.IMapper;
-import Mappers.VehicleMapper;
 import Model.Vehicle;
-import Transfer.VehicleRegistrationDTO;
 import Utility.Exceptions.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,13 +13,11 @@ public class VehicleService implements IVehicleService {
 
     private final IVehicleAccess vehicleAccess;
     private final IAuthService authService;
-    private final IMapper<VehicleRegistrationDTO, Vehicle> vehicleMapper;
 
     @Autowired
     public VehicleService(IVehicleAccess vehicleAccess, IAuthService authService) {
         this.vehicleAccess = vehicleAccess;
         this.authService = authService;
-        vehicleMapper = new VehicleMapper();
     }
 
     /**
@@ -33,21 +28,20 @@ public class VehicleService implements IVehicleService {
      * If the above pass, the access layer is called to add the new vehicle, and it is tied to the user account returned
      * by the token check
      *
-     * @param vehicleRegistrationDTO The vehicle registration details
+     * @param vehicle The vehicle registration details
      * @param userID                The users id to register as owner
      * @param token                  The token used to authenticate the provided user id
      * @throws UnauthorizedException        If the token is not valid
      * @throws IllegalArgumentException     If the matched user already has a vehicle with the given plate
      */
     @Override
-    public void registerVehicle(VehicleRegistrationDTO vehicleRegistrationDTO, int userID, String token) throws UnauthorizedException, IllegalArgumentException {
+    public void registerVehicle(Vehicle vehicle, int userID, String token) throws UnauthorizedException, IllegalArgumentException {
         if (!authService.isTokenValid(token, userID)) {
             throw new UnauthorizedException("Token does not match given userID");
         }
-        if (getVehicleInfo(vehicleRegistrationDTO.getPlate(), userID) != null) {
+        if (getVehicleInfo(vehicle.getPlate(), userID) != null) {
             throw new IllegalArgumentException("This user already registered a vehicle with the same plate");
         }
-        Vehicle vehicle = vehicleMapper.map(vehicleRegistrationDTO);
         vehicleAccess.insertVehicle(vehicle, userID);
     }
 
@@ -86,7 +80,10 @@ public class VehicleService implements IVehicleService {
      * @return The set with the user's vehicles
      */
     @Override
-    public Set<Vehicle> getUsersVehicles(int userID) {
+    public Set<Vehicle> getUsersVehicles(int userID, String token) throws UnauthorizedException {
+        if (!authService.isTokenValid(token, userID)) {
+            throw new UnauthorizedException("Token does not match given userID");
+        }
         return vehicleAccess.getVehiclesByID(userID);
     }
 }
