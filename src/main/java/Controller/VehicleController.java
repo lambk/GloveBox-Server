@@ -41,11 +41,11 @@ public class VehicleController {
      */
     @CrossOrigin(methods = {RequestMethod.POST})
     @RequestMapping(value = "/{userID}", method = RequestMethod.POST, consumes = "application/json")
-    public ResponseEntity<String> registerVehicle(@RequestBody VehicleRegistrationDTO vehicleInfo, @PathVariable("userID") int userID, @RequestHeader("token") String token) {
+    public ResponseEntity<?> registerVehicle(@RequestBody VehicleRegistrationDTO vehicleInfo, @PathVariable("userID") int userID, @RequestHeader("token") String token) {
         try {
             Vehicle vehicle = registrationDTOVehicleMapper.map(vehicleInfo);
-            vehicleService.registerVehicle(vehicle, userID, token);
-            return new ResponseEntity<>("Vehicle registered successfully", HttpStatus.CREATED);
+            Vehicle insertedVehicle = vehicleService.registerVehicle(vehicle, userID, token);
+            return new ResponseEntity<>(vehicleVehicleDTOMapper.map(insertedVehicle), HttpStatus.CREATED);
         } catch (UnauthorizedException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         } catch (IllegalArgumentException e) {
@@ -91,7 +91,7 @@ public class VehicleController {
             if (vehicle == null) {
                 return new ResponseEntity<>("No matching vehicle found", HttpStatus.NOT_FOUND);
             }
-            return new ResponseEntity<>(vehicle, HttpStatus.OK);
+            return new ResponseEntity<>(vehicleVehicleDTOMapper.map(vehicle), HttpStatus.OK);
         } catch (UnauthorizedException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         }

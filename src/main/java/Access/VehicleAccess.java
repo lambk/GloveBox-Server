@@ -68,15 +68,17 @@ public class VehicleAccess implements IVehicleAccess {
      *
      * @param vehicle The new vehicle to add
      * @param userID The owners id
+     * @return the id of the inserted vehicle
      */
     @Override
-    public void insertVehicle(Vehicle vehicle, int userID) {
+    public int insertVehicle(Vehicle vehicle, int userID) {
         try (Session session = sessionFactory.openSession()) {
             Transaction tx = session.beginTransaction();
             User user = session.load(User.class, userID);
             vehicle.setOwner(user);
-            session.save(vehicle);
+            int id = (Integer) session.save(vehicle);
             tx.commit();
+            return id;
         }
     }
 

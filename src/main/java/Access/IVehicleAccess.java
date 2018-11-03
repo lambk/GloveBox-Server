@@ -9,7 +9,7 @@ public interface IVehicleAccess {
 
     Set<Vehicle> getVehiclesByID(int userID);
 
-    void insertVehicle(Vehicle vehicle, int userID);
+    int insertVehicle(Vehicle vehicle, int userID);
 
     void updateVehicle(Vehicle vehicle);
 

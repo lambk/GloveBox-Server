@@ -33,16 +33,19 @@ public class VehicleService implements IVehicleService {
      * @param token                  The token used to authenticate the provided user id
      * @throws UnauthorizedException        If the token is not valid
      * @throws IllegalArgumentException     If the matched user already has a vehicle with the given plate
+     * @return The vehicle object with its associated id
      */
     @Override
-    public void registerVehicle(Vehicle vehicle, int userID, String token) throws UnauthorizedException, IllegalArgumentException {
+    public Vehicle registerVehicle(Vehicle vehicle, int userID, String token) throws UnauthorizedException, IllegalArgumentException {
         if (!authService.isTokenValid(token, userID)) {
             throw new UnauthorizedException("Token does not match given userID");
         }
         if (getVehicleInfo(vehicle.getPlate(), userID) != null) {
             throw new IllegalArgumentException("This user already registered a vehicle with the same plate");
         }
-        vehicleAccess.insertVehicle(vehicle, userID);
+        int id = vehicleAccess.insertVehicle(vehicle, userID);
+        vehicle.setId(id);
+        return vehicle;
     }
 
     /**

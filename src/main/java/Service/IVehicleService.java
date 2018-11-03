@@ -7,7 +7,7 @@ import java.util.Set;
 
 public interface IVehicleService {
 
-    void registerVehicle(Vehicle vehicle, int userID, String token) throws UnauthorizedException, IllegalArgumentException;
+    Vehicle registerVehicle(Vehicle vehicle, int userID, String token) throws UnauthorizedException, IllegalArgumentException;
 
     Vehicle getVehicleInfo(String plate, int userID, String token) throws UnauthorizedException;
 
