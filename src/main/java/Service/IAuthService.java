@@ -2,11 +2,10 @@ package Service;
 
 import Transfer.LoginDTO;
 import Transfer.TokenDTO;
-import Utility.Exceptions.InternalServerErrorException;
 import Utility.Exceptions.UnauthorizedException;
 
 public interface IAuthService {
-    TokenDTO login(LoginDTO loginDTO) throws UnauthorizedException, InternalServerErrorException;
+    TokenDTO login(LoginDTO loginDTO) throws UnauthorizedException;
 
     void logout(String token, int userID);
 

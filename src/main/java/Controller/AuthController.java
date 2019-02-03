@@ -3,7 +3,6 @@ package Controller;
 import Service.IAuthService;
 import Transfer.LoginDTO;
 import Transfer.TokenDTO;
-import Utility.Exceptions.InternalServerErrorException;
 import Utility.Exceptions.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,16 +28,9 @@ public class AuthController {
      */
     @CrossOrigin(methods = {RequestMethod.POST})
     @RequestMapping(value = "/login", method = RequestMethod.POST, consumes = "application/json")
-    public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) {
-        try {
-            TokenDTO authentication = authService.login(loginDTO);
-            return new ResponseEntity<>(authentication, HttpStatus.OK);
-        } catch (UnauthorizedException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
-        } catch (InternalServerErrorException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
+    public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) throws UnauthorizedException {
+        TokenDTO authentication = authService.login(loginDTO);
+        return new ResponseEntity<>(authentication, HttpStatus.OK);
     }
 
     /**
