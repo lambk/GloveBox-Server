@@ -17,7 +17,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @RestController
-@RequestMapping(value = "/vehicles", consumes = "application/json")
+@RequestMapping(value = "/vehicles")
 public class VehicleController {
 
     private final IVehicleService vehicleService;
@@ -61,7 +61,7 @@ public class VehicleController {
      * @return The ResponseEntity outcome of the fetch attempt
      */
     @CrossOrigin(methods = {RequestMethod.GET})
-    @RequestMapping(value = "/{userID}", method = RequestMethod.GET, consumes = "application/json")
+    @RequestMapping(value = "/{userID}", method = RequestMethod.GET)
     public ResponseEntity<?> getVehicles(@PathVariable("userID") int userID, @RequestHeader("token") String token) {
         try {
             Set<VehicleDTO> vehicleDTOs = new HashSet<>();
