@@ -14,7 +14,7 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value = UnauthorizedException.class)
     protected ResponseEntity<Object> handleUnauthorised(UnauthorizedException e, WebRequest request) {
-        final String message = e.getMessage() != null ? e.getMessage() : "You are unauthorised to perform this action";
+        final String message = e.getMessage() != null ? e.getMessage() : "You are not authorised to perform this action";
         return handleExceptionInternal(e, message,
                 new HttpHeaders(), HttpStatus.UNAUTHORIZED, request);
     }
