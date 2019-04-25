@@ -84,7 +84,7 @@ public class VehicleController {
      * @return The ResponseEntity outcome of the fetch attempt
      */
     @CrossOrigin(methods = {RequestMethod.GET})
-    @RequestMapping(value = "/{userID}/{plate}", method = RequestMethod.GET, consumes = "application/json")
+    @RequestMapping(value = "/{userID}/{plate}", method = RequestMethod.GET)
     public ResponseEntity<?> getVehicle(@PathVariable("userID") int userID, @PathVariable("plate") String plate, @RequestHeader("token") String token) {
         try {
             Vehicle vehicle = vehicleService.getVehicleInfo(plate, userID, token);
